@@ -52,6 +52,9 @@ STORAGEBUCKET=your-project.appspot.com
 MESSAGINGSENDERID=your_sender_id
 APPID=your_app_id
 
+```
+  Add firebase-service-account.json file in root directory 
+```
 # Mapbox
 MAPBOX_API_KEY=your_mapbox_api_key
 
