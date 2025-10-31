@@ -1,0 +1,2224 @@
+openapi: 3.0.0
+info:
+  title: Pick-N-Get Rider API
+  description: API for managing riders, pickups, and locations in the Pick-N-Get recycling platform
+  version: 1.0.0
+  contact:
+    name: Pick-N-Get Team
+    email: support@picknget.com
+
+servers:
+  - url: https://pick-n-get-be.onrender.com
+    description: Production server
+  - url: http://localhost:5000
+    description: Development server
+
+tags:
+  - name: Riders
+    description: Rider registration and management
+  - name: Pickups
+    description: Pickup request management
+  - name: Agents
+    description: Agent dashboard and pickup operations
+  - name: Location
+    description: Real-time location tracking
+  - name: Upload
+    description: Document upload endpoints using Hedera File Service
+  - name: Admin
+    description: Admin dashboard and management endpoints
+
+components:
+  schemas:
+    Rider:
+      type: object
+      properties:
+        id:
+          type: number
+          description: Unique rider identifier
+        name:
+          type: string
+          description: Rider's full name
+        phoneNumber:
+          type: string
+          description: Rider's phone number
+        vehicleNumber:
+          type: string
+          description: Vehicle registration number
+        homeAddress:
+          type: string
+          description: Rider's home address
+        walletAddress:
+          type: string
+          description: Blockchain wallet address
+          nullable: true
+        vehicleType:
+          type: string
+          enum: [Bike, Car, Truck, Van]
+          description: Type of vehicle
+        country:
+          type: string
+          description: Country of operation
+        capacity:
+          type: number
+          description: Vehicle carrying capacity in kg
+        riderStatus:
+          type: string
+          enum: [Available, Off-line, On-Trip]
+          description: Current rider status
+        approvalStatus:
+          type: string
+          enum: [Pending, Approved, Reject]
+          description: Rider approval status
+        vehicleMakeModel:
+          type: string
+          description: Vehicle make and model
+          nullable: true
+        vehiclePlateNumber:
+          type: string
+          description: Vehicle license plate number
+          nullable: true
+        vehicleColor:
+          type: string
+          description: Vehicle color
+          nullable: true
+        profileImage:
+          type: string
+          description: IPFS CID for profile photo
+          nullable: true
+        driversLicense:
+          type: string
+          description: IPFS CID for driver's license document
+          nullable: true
+        vehicleRegistration:
+          type: string
+          description: IPFS CID for vehicle registration certificate
+        insuranceCertificate:
+          type: string
+          description: IPFS CID for insurance certificate
+          nullable: true
+        vehiclePhotos:
+          type: string
+          description: IPFS CID for vehicle photos
+        createdAt:
+          type: string
+          format: date-time
+          description: Registration timestamp
+        updatedAt:
+          type: string
+          format: date-time
+          description: Last update timestamp
+
+    RiderRegistrationRequest:
+      type: object
+      required:
+        - id
+        - name
+        - phoneNumber
+        - vehicleNumber
+        - homeAddress
+        - vehicleType
+        - country
+        - capacity
+        - vehicleRegistration
+        - vehiclePhotos
+      properties:
+        id:
+          type: number
+          example: 123
+          description: Unique rider ID (0-255 for blockchain compatibility)
+        name:
+          type: string
+          example: "John Doe"
+          minLength: 2
+        phoneNumber:
+          type: string
+          example: "123"
+          description: User ID number (0-255)
+        vehicleNumber:
+          type: string
+          example: "ABC-123-XY"
+        homeAddress:
+          type: string
+          example: "123 Housing Estate, Cape Town"
+          minLength: 10
+        walletAddress:
+          type: string
+          example: "0x1234567890abcdef..."
+          nullable: true
+        vehicleType:
+          type: string
+          enum: [Bike, Car, Truck, Van]
+          example: "Car"
+        country:
+          type: string
+          example: "Ghana"
+        capacity:
+          type: number
+          example: 50
+          minimum: 1
+        vehicleMakeModel:
+          type: string
+          example: "Toyota Corolla"
+          nullable: true
+        vehiclePlateNumber:
+          type: string
+          example: "GH-1234-20"
+          nullable: true
+        vehicleColor:
+          type: string
+          example: "Red"
+          nullable: true
+        profileImage:
+          type: string
+          example: "QmXx...abc123"
+          description: IPFS CID
+          nullable: true
+        driversLicense:
+          type: string
+          example: "QmYy...def456"
+          description: IPFS CID
+          nullable: true
+        vehicleRegistration:
+          type: string
+          example: "QmZz...ghi789"
+          description: IPFS CID (required)
+        insuranceCertificate:
+          type: string
+          example: "QmAa...jkl012"
+          description: IPFS CID
+          nullable: true
+        vehiclePhotos:
+          type: string
+          example: "QmBb...mno345"
+          description: IPFS CID (required)
+        riderStatus:
+          type: string
+          enum: [Available, Off-line, On-Trip]
+          nullable: true
+        approvalStatus:
+          type: string
+          enum: [Pending, Approved, Reject]
+          nullable: true
+
+    RiderRegistrationResponse:
+      type: object
+      properties:
+        status:
+          type: string
+          example: "success"
+        message:
+          type: string
+          example: "Rider created successfully with ID: 123"
+        data:
+          type: object
+          properties:
+            riderId:
+              type: number
+            name:
+              type: string
+            phoneNumber:
+              type: string
+            vehicleType:
+              type: string
+            approvalStatus:
+              type: string
+            walletAddress:
+              type: string
+            documents:
+              type: object
+              properties:
+                profileImage:
+                  type: string
+                  nullable: true
+                driversLicense:
+                  type: string
+                  nullable: true
+                vehicleRegistration:
+                  type: string
+                insuranceCertificate:
+                  type: string
+                  nullable: true
+                vehiclePhotos:
+                  type: string
+
+    RiderCheckResponse:
+      type: object
+      properties:
+        status:
+          type: string
+          example: "success"
+        isRegistered:
+          type: boolean
+          example: true
+        message:
+          type: string
+          example: "Rider found"
+        data:
+          type: object
+          properties:
+            riderId:
+              type: number
+            name:
+              type: string
+            approvalStatus:
+              type: string
+            riderStatus:
+              type: string
+            vehicleType:
+              type: string
+            walletAddress:
+              type: string
+
+    ValidationError:
+      type: object
+      properties:
+        status:
+          type: string
+          example: "error"
+        message:
+          type: string
+          example: "Validation failed"
+        errors:
+          type: array
+          items:
+            type: string
+          example:
+            - "Valid name is required (minimum 2 characters)"
+            - "Vehicle registration document (IPFS CID) is required"
+
+    PickupDetail:
+      type: object
+      properties:
+        trackingId:
+          type: string
+          example: "REC123456"
+        pickupId:
+          type: string
+          example: "507f1f77bcf86cd799439011"
+        customerName:
+          type: string
+          example: "John Doe"
+        customerPhoneNumber:
+          type: string
+          example: "+234123456789"
+        pickupAddress:
+          type: string
+          example: "123 Main St, Lagos"
+        itemCategory:
+          type: string
+          example: "plastic"
+        itemWeight:
+          type: number
+          example: 15.5
+        itemDescription:
+          type: string
+          example: "Mixed plastic bottles"
+        estimatedEarnings:
+          type: number
+          example: 1800
+        pickUpStatus:
+          type: string
+          enum: [Pending, InTransit, PickedUp, Delivered, Cancelled]
+          example: "InTransit"
+        requestedAt:
+          type: string
+          format: date-time
+          example: "2025-01-15T10:30:00Z"
+        acceptedAt:
+          type: string
+          format: date-time
+          example: "2025-01-15T10:35:00Z"
+
+    DashboardStats:
+      type: object
+      properties:
+        totalUsers:
+          type: number
+          example: 1245
+        activeUsers:
+          type: number
+          example: 980
+        totalRiders:
+          type: number
+          example: 156
+        activeAgents:
+          type: number
+          example: 89
+        verifiedVendors:
+          type: number
+          example: 45
+        pendingApprovals:
+          type: number
+          example: 12
+        platformRevenue:
+          type: string
+          example: "$45,230"
+        totalEarnings:
+          type: number
+          example: 45230
+        userGrowthRate:
+          type: string
+          example: "+12.5%"
+        pickupGrowthRate:
+          type: string
+          example: "+8.3%"
+        approvedToday:
+          type: number
+          example: 5
+        rejectedToday:
+          type: number
+          example: 1
+        systemUptime:
+          type: string
+          example: "99.8%"
+        transactionSuccessRate:
+          type: string
+          example: "96.2%"
+
+    UserStats:
+      type: object
+      properties:
+        total:
+          type: number
+          example: 1245
+        byStatus:
+          type: object
+          properties:
+            active:
+              type: number
+              example: 980
+            inactive:
+              type: number
+              example: 200
+            suspended:
+              type: number
+              example: 5
+        byRole:
+          type: object
+          properties:
+            recyclers:
+              type: number
+              example: 1200
+            admins:
+              type: number
+              example: 3
+            superAdmins:
+              type: number
+              example: 1
+
+    RiderStats:
+      type: object
+      properties:
+        total:
+          type: number
+          example: 156
+        byStatus:
+          type: object
+          properties:
+            pending:
+              type: number
+              example: 12
+            approved:
+              type: number
+              example: 120
+            rejected:
+              type: number
+              example: 24
+        byVehicleType:
+          type: object
+          properties:
+            Car:
+              type: number
+              example: 80
+            Bike:
+              type: number
+              example: 50
+            Van:
+              type: number
+              example: 20
+            Truck:
+              type: number
+              example: 6
+
+    RecentActivity:
+      type: object
+      properties:
+        type:
+          type: string
+          example: "user_registration"
+        message:
+          type: string
+          example: "New user registered: John Doe"
+        timestamp:
+          type: string
+          format: date-time
+        details:
+          type: object
+
+    SystemAlert:
+      type: object
+      properties:
+        id:
+          type: string
+          example: "high_pending_riders"
+        type:
+          type: string
+          enum: [error, warning, info]
+          example: "warning"
+        title:
+          type: string
+          example: "High Pending Approvals"
+        message:
+          type: string
+          example: "12 riders awaiting approval"
+        timestamp:
+          type: string
+          format: date-time
+        priority:
+          type: string
+          enum: [low, medium, high]
+          example: "medium"
+
+    Error:
+      type: object
+      properties:
+        status:
+          type: string
+          example: "error"
+        message:
+          type: string
+          example: "Error message description"
+
+paths:
+  /api/v1/riders:
+    post:
+      tags:
+        - Riders
+      summary: Register a new rider
+      description: Register a new rider with personal information, vehicle details, and IPFS document CIDs
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RiderRegistrationRequest"
+            examples:
+              fullRegistration:
+                summary: Complete rider registration
+                value:
+                  id: 123
+                  name: "John Doe"
+                  phoneNumber: "123"
+                  vehicleNumber: "ABC-123-XY"
+                  homeAddress: "123 Housing Estate, Cape Town, South Africa"
+                  walletAddress: "0x1234567890abcdef1234567890abcdef12345678"
+                  vehicleType: "Car"
+                  country: "Ghana"
+                  capacity: 50
+                  vehicleMakeModel: "Toyota Corolla"
+                  vehiclePlateNumber: "GH-1234-20"
+                  vehicleColor: "Red"
+                  profileImage: "QmXx...abc123"
+                  driversLicense: "QmYy...def456"
+                  vehicleRegistration: "QmZz...ghi789"
+                  insuranceCertificate: "QmAa...jkl012"
+                  vehiclePhotos: "QmBb...mno345"
+              minimalRegistration:
+                summary: Minimal required fields
+                value:
+                  id: 124
+                  name: "Jane Smith"
+                  phoneNumber: "124"
+                  vehicleNumber: "XYZ-456-AB"
+                  homeAddress: "456 Main Street, Accra, Ghana"
+                  vehicleType: "Bike"
+                  country: "Ghana"
+                  capacity: 10
+                  vehicleRegistration: "QmCc...pqr678"
+                  vehiclePhotos: "QmDd...stu901"
+      responses:
+        "201":
+          description: Rider registered successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RiderRegistrationResponse"
+              example:
+                status: "success"
+                message: "Rider created successfully with ID: 123"
+                data:
+                  riderId: 123
+                  name: "John Doe"
+                  phoneNumber: "123"
+                  vehicleType: "Car"
+                  approvalStatus: "Pending"
+                  walletAddress: "0x1234567890abcdef1234567890abcdef12345678"
+                  documents:
+                    profileImage: "QmXx...abc123"
+                    driversLicense: "QmYy...def456"
+                    vehicleRegistration: "QmZz...ghi789"
+                    insuranceCertificate: "QmAa...jkl012"
+                    vehiclePhotos: "QmBb...mno345"
+        "400":
+          description: Validation error or missing required fields
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ValidationError"
+              examples:
+                validationFailed:
+                  summary: Validation errors
+                  value:
+                    status: "error"
+                    message: "Validation failed"
+                    errors:
+                      - "Valid name is required (minimum 2 characters)"
+                      - "Vehicle registration document (IPFS CID) is required"
+                      - "Valid capacity is required (positive number)"
+                missingFields:
+                  summary: Missing required fields
+                  value:
+                    status: "error"
+                    message: "Missing required fields: id, name, phoneNumber, vehicleNumber, homeAddress, vehicleType, country, capacity, vehicleRegistration, vehiclePhotos"
+                invalidVehicleType:
+                  summary: Invalid vehicle type
+                  value:
+                    status: "error"
+                    message: "Invalid vehicle type. Must be one of: Bike, Car, Truck, Van"
+        "409":
+          description: Rider already exists or duplicate data
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                  message:
+                    type: string
+              examples:
+                riderExists:
+                  summary: Rider ID already exists
+                  value:
+                    status: "Rider already exists"
+                    message: "A rider with ID 123 already exists"
+                phoneExists:
+                  summary: Phone number already registered
+                  value:
+                    status: "error"
+                    message: "Phone number already registered"
+                vehicleExists:
+                  summary: Vehicle number already registered
+                  value:
+                    status: "error"
+                    message: "Vehicle number already registered"
+                walletExists:
+                  summary: Wallet address already registered
+                  value:
+                    status: "error"
+                    message: "Wallet address already registered"
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+    get:
+      tags:
+        - Riders
+      summary: Get all riders
+      description: Retrieve a list of all registered riders with their basic information
+      responses:
+        "200":
+          description: Successfully retrieved all riders
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: "success"
+                  count:
+                    type: number
+                    example: 25
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        riderId:
+                          type: number
+                        name:
+                          type: string
+                        phoneNumber:
+                          type: string
+                        vehicleNumber:
+                          type: string
+                        walletAddress:
+                          type: string
+                          nullable: true
+                        riderStatus:
+                          type: string
+                        vehicleType:
+                          type: string
+                        approvalStatus:
+                          type: string
+                        country:
+                          type: string
+                        capacity:
+                          type: number
+                        vehicleMakeModel:
+                          type: string
+                          nullable: true
+                        vehiclePlateNumber:
+                          type: string
+                          nullable: true
+                        vehicleColor:
+                          type: string
+                          nullable: true
+                        hasProfileImage:
+                          type: boolean
+                        hasDriversLicense:
+                          type: boolean
+                        hasVehicleRegistration:
+                          type: boolean
+                        hasInsuranceCertificate:
+                          type: boolean
+                        hasVehiclePhotos:
+                          type: boolean
+                        createdAt:
+                          type: string
+                          format: date-time
+                        updatedAt:
+                          type: string
+                          format: date-time
+              example:
+                status: "success"
+                count: 2
+                data:
+                  - riderId: 123
+                    name: "John Doe"
+                    phoneNumber: "123"
+                    vehicleNumber: "ABC-123-XY"
+                    walletAddress: "0x1234...5678"
+                    riderStatus: "Available"
+                    vehicleType: "Car"
+                    approvalStatus: "Approved"
+                    country: "Ghana"
+                    capacity: 50
+                    vehicleMakeModel: "Toyota Corolla"
+                    vehiclePlateNumber: "GH-1234-20"
+                    vehicleColor: "Red"
+                    hasProfileImage: true
+                    hasDriversLicense: true
+                    hasVehicleRegistration: true
+                    hasInsuranceCertificate: true
+                    hasVehiclePhotos: true
+                    createdAt: "2025-01-15T10:30:00Z"
+                    updatedAt: "2025-01-15T10:30:00Z"
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+  /api/v1/riders/check/{identifier}:
+    get:
+      tags:
+        - Riders
+      summary: Check if rider is registered
+      description: Check rider registration status by rider ID or wallet address
+      parameters:
+        - in: path
+          name: identifier
+          required: true
+          schema:
+            type: string
+          description: Rider ID (number) or wallet address (string)
+          examples:
+            byId:
+              summary: Check by rider ID
+              value: "123"
+            byWallet:
+              summary: Check by wallet address
+              value: "0x1234567890abcdef1234567890abcdef12345678"
+      responses:
+        "200":
+          description: Check completed successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RiderCheckResponse"
+              examples:
+                registered:
+                  summary: Rider is registered
+                  value:
+                    status: "success"
+                    isRegistered: true
+                    data:
+                      riderId: 123
+                      name: "John Doe"
+                      approvalStatus: "Pending"
+                      riderStatus: "Available"
+                      vehicleType: "Car"
+                      walletAddress: "0x1234567890abcdef1234567890abcdef12345678"
+                notRegistered:
+                  summary: Rider not found
+                  value:
+                    status: "success"
+                    isRegistered: false
+                    message: "No rider found with this identifier"
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+  /api/v1/upload/document:
+    post:
+      tags:
+        - Upload
+      summary: Upload single document to Hedera File Service
+      description: Upload a single document (image or PDF) to Hedera File Service and receive a File ID
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                file:
+                  type: string
+                  format: binary
+                  description: File to upload (max 10MB, allowed types - jpg, jpeg, png, pdf)
+      responses:
+        "200":
+          description: File uploaded successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: success
+                  message:
+                    type: string
+                    example: File uploaded successfully to Hedera File Service
+                  data:
+                    type: object
+                    properties:
+                      fileId:
+                        type: string
+                        example: "0.0.12345678"
+                      fileName:
+                        type: string
+                        example: drivers-license.pdf
+                      fileSize:
+                        type: number
+                        example: 524288
+                      mimeType:
+                        type: string
+                        example: application/pdf
+                      uploadedAt:
+                        type: string
+                        format: date-time
+        "400":
+          description: Bad request - no file or validation failed
+        "500":
+          description: Server error
+
+  /api/v1/upload/documents:
+    post:
+      tags:
+        - Upload
+      summary: Upload multiple documents to Hedera File Service
+      description: Upload multiple documents at once (max 10 files)
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                files:
+                  type: array
+                  items:
+                    type: string
+                    format: binary
+                  description: Multiple files to upload (max 10MB each)
+      responses:
+        "200":
+          description: Files uploaded successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: success
+                  message:
+                    type: string
+                    example: "Uploaded 4 of 4 files"
+                  data:
+                    type: object
+                    properties:
+                      uploaded:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            fileName:
+                              type: string
+                            fileId:
+                              type: string
+                            fileSize:
+                              type: number
+                            mimeType:
+                              type: string
+                      failed:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            fileName:
+                              type: string
+                            error:
+                              type: string
+        "400":
+          description: Bad request - no files uploaded
+        "500":
+          description: Server error
+
+  /api/v1/riders/{riderId}:
+    get:
+      tags:
+        - Riders
+      summary: Get rider by ID
+      description: Retrieve detailed information about a specific rider including all documents
+      parameters:
+        - in: path
+          name: riderId
+          required: true
+          schema:
+            type: number
+          example: 123
+      responses:
+        "200":
+          description: Successfully retrieved rider details
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: "success"
+                  data:
+                    type: object
+                    properties:
+                      riderId:
+                        type: number
+                      name:
+                        type: string
+                      phoneNumber:
+                        type: string
+                      vehicleNumber:
+                        type: string
+                      homeAddress:
+                        type: string
+                      walletAddress:
+                        type: string
+                        nullable: true
+                      riderStatus:
+                        type: string
+                      vehicleType:
+                        type: string
+                      approvalStatus:
+                        type: string
+                      country:
+                        type: string
+                      capacity:
+                        type: number
+                      vehicleMakeModel:
+                        type: string
+                        nullable: true
+                      vehiclePlateNumber:
+                        type: string
+                        nullable: true
+                      vehicleColor:
+                        type: string
+                        nullable: true
+                      documents:
+                        type: object
+                        properties:
+                          profileImage:
+                            type: string
+                            nullable: true
+                          driversLicense:
+                            type: string
+                            nullable: true
+                          vehicleRegistration:
+                            type: string
+                          insuranceCertificate:
+                            type: string
+                            nullable: true
+                          vehiclePhotos:
+                            type: string
+                      createdAt:
+                        type: string
+                        format: date-time
+                      updatedAt:
+                        type: string
+                        format: date-time
+              example:
+                status: "success"
+                data:
+                  riderId: 123
+                  name: "John Doe"
+                  phoneNumber: "123"
+                  vehicleNumber: "ABC-123-XY"
+                  homeAddress: "123 Housing Estate, Cape Town, South Africa"
+                  walletAddress: "0x1234567890abcdef1234567890abcdef12345678"
+                  riderStatus: "Available"
+                  vehicleType: "Car"
+                  approvalStatus: "Pending"
+                  country: "Ghana"
+                  capacity: 50
+                  vehicleMakeModel: "Toyota Corolla"
+                  vehiclePlateNumber: "GH-1234-20"
+                  vehicleColor: "Red"
+                  documents:
+                    profileImage: "QmXx...abc123"
+                    driversLicense: "QmYy...def456"
+                    vehicleRegistration: "QmZz...ghi789"
+                    insuranceCertificate: "QmAa...jkl012"
+                    vehiclePhotos: "QmBb...mno345"
+                  createdAt: "2025-01-15T10:30:00Z"
+                  updatedAt: "2025-01-15T10:30:00Z"
+        "404":
+          description: Rider not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: "error"
+                  message:
+                    type: string
+                    example: "Rider not found"
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+  /api/v1/riders/{riderId}/approval:
+    patch:
+      tags:
+        - Riders
+      summary: Update rider approval status
+      description: Approve or reject a rider's registration (Admin only)
+      parameters:
+        - in: path
+          name: riderId
+          required: true
+          schema:
+            type: number
+          example: 123
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - status
+              properties:
+                status:
+                  type: string
+                  enum: [approve, reject]
+            examples:
+              approve:
+                summary: Approve rider
+                value:
+                  status: "approve"
+              reject:
+                summary: Reject rider
+                value:
+                  status: "reject"
+      responses:
+        "200":
+          description: Rider approval status updated successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: "success"
+                  message:
+                    type: string
+                    example: "Rider approved successfully"
+                  data:
+                    type: object
+                    properties:
+                      riderId:
+                        type: number
+                      name:
+                        type: string
+                      approvalStatus:
+                        type: string
+                      vehicleType:
+                        type: string
+                      walletAddress:
+                        type: string
+              examples:
+                approved:
+                  summary: Rider approved
+                  value:
+                    status: "success"
+                    message: "Rider approved successfully"
+                    data:
+                      riderId: 123
+                      name: "John Doe"
+                      approvalStatus: "Approved"
+                      vehicleType: "Car"
+                      walletAddress: "0x1234567890abcdef1234567890abcdef12345678"
+                rejected:
+                  summary: Rider rejected
+                  value:
+                    status: "success"
+                    message: "Rider rejected successfully"
+                    data:
+                      riderId: 123
+                      name: "John Doe"
+                      approvalStatus: "Reject"
+                      vehicleType: "Car"
+                      walletAddress: "0x1234567890abcdef1234567890abcdef12345678"
+        "404":
+          description: Rider not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: "error"
+                  message:
+                    type: string
+                    example: "Rider not found"
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+  /api/v1/pickups/find-riders:
+    post:
+      tags:
+        - Pickups
+      summary: Find nearest available riders
+      description: Find up to 5 nearest riders based on pickup location, item weight, and country
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - pickupAddress
+                - itemWeight
+                - country
+              properties:
+                pickupAddress:
+                  type: string
+                  example: "123 Victoria Island, Lagos, Nigeria"
+                  description: Full pickup address for geocoding
+                itemWeight:
+                  type: number
+                  example: 15.5
+                  description: Item weight in kilograms
+                country:
+                  type: string
+                  example: "Nigeria"
+                  description: Country for filtering riders
+            examples:
+              lightItem:
+                summary: Light item (Bike)
+                value:
+                  pickupAddress: "123 Main Street, Lagos"
+                  itemWeight: 3
+                  country: "Nigeria"
+              heavyItem:
+                summary: Heavy item (Van)
+                value:
+                  pickupAddress: "456 Industrial Area, Abuja"
+                  itemWeight: 150
+                  country: "Nigeria"
+      responses:
+        "200":
+          description: Successfully found available riders
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: "success"
+                  message:
+                    type: string
+                    example: "Found 5 available riders"
+                  data:
+                    type: object
+                    properties:
+                      riders:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            riderId:
+                              type: number
+                              example: 123
+                            name:
+                              type: string
+                              example: "John Adebayo"
+                            phoneNumber:
+                              type: string
+                              example: "234"
+                            vehicleNumber:
+                              type: string
+                              example: "LAG-123-ABC"
+                            vehicleType:
+                              type: string
+                              example: "Car"
+                            capacity:
+                              type: number
+                              example: 50
+                            profileImage:
+                              type: string
+                              example: "QmXx...abc123"
+                            lat:
+                              type: number
+                              example: 6.5244
+                            lng:
+                              type: number
+                              example: 3.3792
+                            distance:
+                              type: number
+                              example: 2345
+                              description: Distance in meters
+                            duration:
+                              type: number
+                              example: 420
+                              description: Duration in seconds
+                            eta:
+                              type: string
+                              example: "7 mins"
+                      vehicleType:
+                        type: string
+                        example: "Car"
+                      itemWeight:
+                        type: number
+                        example: 15.5
+              examples:
+                withRiders:
+                  summary: Found available riders
+                  value:
+                    status: "success"
+                    message: "Found 5 available riders"
+                    data:
+                      riders:
+                        - riderId: 123
+                          name: "John Adebayo"
+                          phoneNumber: "234"
+                          vehicleNumber: "LAG-123-ABC"
+                          vehicleType: "Car"
+                          capacity: 50
+                          lat: 6.5244
+                          lng: 3.3792
+                          distance: 2345
+                          duration: 420
+                          eta: "7 mins"
+                      vehicleType: "Car"
+                      itemWeight: 15.5
+                noRiders:
+                  summary: No riders available
+                  value:
+                    status: "success"
+                    message: "No available riders found in your area"
+                    data:
+                      riders: []
+                      vehicleType: "Car"
+                      itemWeight: 15.5
+        "400":
+          description: Invalid request data
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+  /api/v1/pickups/create:
+    post:
+      tags:
+        - Pickups
+      summary: Create a new pickup request
+      description: Create pickup request with rider assignment and blockchain item ID
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - userId
+                - itemId
+                - customerName
+                - customerPhoneNumber
+                - pickupAddress
+                - itemCategory
+                - itemWeight
+                - estimatedEarnings
+                - riderId
+              properties:
+                userId:
+                  type: number
+                  example: 1
+                  description: User ID from smart contract
+                itemId:
+                  type: number
+                  example: 1
+                  description: Item ID from recycleItem blockchain transaction
+                customerName:
+                  type: string
+                  example: "John Doe"
+                customerPhoneNumber:
+                  type: string
+                  example: "+234123456789"
+                pickupAddress:
+                  type: string
+                  example: "123 Main St, Victoria Island, Lagos"
+                pickupCoordinates:
+                  type: object
+                  properties:
+                    lat:
+                      type: number
+                      example: 6.4281
+                    lng:
+                      type: number
+                      example: 3.4219
+                itemCategory:
+                  type: string
+                  example: "plastic"
+                  enum: [plastic, metal, glass, electronic, paper, textile]
+                itemWeight:
+                  type: number
+                  example: 15.5
+                  description: Weight in kilograms
+                itemDescription:
+                  type: string
+                  example: "Mixed plastic bottles and containers"
+                itemImages:
+                  type: array
+                  items:
+                    type: string
+                  example: ["QmXx...abc123"]
+                  description: Array of IPFS CIDs
+                estimatedEarnings:
+                  type: number
+                  example: 1860
+                  description: Estimated earnings in local currency
+                riderId:
+                  type: number
+                  example: 123
+                  description: Selected rider ID
+            example:
+              userId: 1
+              itemId: 1
+              customerName: "John Doe"
+              customerPhoneNumber: "+234123456789"
+              pickupAddress: "123 Main St, Victoria Island, Lagos"
+              pickupCoordinates:
+                lat: 6.4281
+                lng: 3.4219
+              itemCategory: "plastic"
+              itemWeight: 15
+              itemDescription: "Mixed plastic bottles"
+              estimatedEarnings: 1800
+              riderId: 123
+      responses:
+        "201":
+          description: Pickup created successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: "success"
+                  message:
+                    type: string
+                    example: "Pickup created successfully"
+                  data:
+                    type: object
+                    properties:
+                      trackingId:
+                        type: string
+                        example: "REC123456"
+                      pickupId:
+                        type: string
+                        example: "507f1f77bcf86cd799439011"
+                      riderId:
+                        type: number
+                        example: 123
+                      riderName:
+                        type: string
+                        example: "John Adebayo"
+                      riderPhoneNumber:
+                        type: string
+                        example: "234"
+                      estimatedEarnings:
+                        type: number
+                        example: 1800
+                      pickUpStatus:
+                        type: string
+                        example: "Pending"
+        "400":
+          description: Invalid request or rider not available
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+  /api/v1/agents/{riderId}/stats:
+    get:
+      tags:
+        - Agents
+      summary: Get agent dashboard statistics
+      description: Retrieve agent performance metrics and earnings
+      parameters:
+        - in: path
+          name: riderId
+          required: true
+          schema:
+            type: number
+          example: 123
+      responses:
+        "200":
+          description: Statistics retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: "success"
+                  data:
+                    type: object
+                    properties:
+                      totalPickups:
+                        type: number
+                        example: 156
+                      totalEarnings:
+                        type: number
+                        example: 2450.75
+                      weeklyPickups:
+                        type: number
+                        example: 8
+                      rating:
+                        type: number
+                        example: 4.8
+                      completionRate:
+                        type: number
+                        example: 96
+        "400":
+          description: Invalid rider ID
+        "500":
+          description: Internal server error
+
+  /api/v1/agents/{riderId}/pickups/active:
+    get:
+      tags:
+        - Agents
+      summary: Get agent's active pickups
+      description: Retrieve all pickups with InTransit or PickedUp status
+      parameters:
+        - in: path
+          name: riderId
+          required: true
+          schema:
+            type: number
+          example: 123
+      responses:
+        "200":
+          description: Active pickups retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: "success"
+                  message:
+                    type: string
+                    example: "Found 2 active pickups"
+                  data:
+                    type: object
+                    properties:
+                      count:
+                        type: number
+                        example: 2
+                      pickups:
+                        type: array
+                        items:
+                          $ref: "#/components/schemas/PickupDetail"
+
+  /api/v1/agents/{riderId}/pickups/available:
+    get:
+      tags:
+        - Agents
+      summary: Get available pickup jobs
+      description: Retrieve pending pickups assigned to this agent
+      parameters:
+        - in: path
+          name: riderId
+          required: true
+          schema:
+            type: number
+          example: 123
+        - in: query
+          name: limit
+          schema:
+            type: number
+          example: 10
+          description: Maximum number of jobs to return
+      responses:
+        "200":
+          description: Available jobs retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: "success"
+                  message:
+                    type: string
+                    example: "Found 5 available jobs"
+                  data:
+                    type: object
+                    properties:
+                      count:
+                        type: number
+                        example: 5
+                      jobs:
+                        type: array
+                        items:
+                          $ref: "#/components/schemas/PickupDetail"
+
+  /api/v1/agents/{riderId}/pickups/{pickupId}/accept:
+    post:
+      tags:
+        - Agents
+      summary: Accept a pickup job
+      description: Accept pending pickup and change status to InTransit
+      parameters:
+        - in: path
+          name: riderId
+          required: true
+          schema:
+            type: number
+          example: 123
+        - in: path
+          name: pickupId
+          required: true
+          schema:
+            type: string
+          example: "507f1f77bcf86cd799439011"
+      responses:
+        "200":
+          description: Pickup accepted successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: "success"
+                  message:
+                    type: string
+                    example: "Pickup accepted successfully"
+                  data:
+                    type: object
+                    properties:
+                      trackingId:
+                        type: string
+                        example: "REC123456"
+                      newStatus:
+                        type: string
+                        example: "InTransit"
+        "400":
+          description: Cannot accept pickup (wrong status, not assigned, etc.)
+        "500":
+          description: Internal server error
+
+  /api/v1/agents/{riderId}/pickups/{pickupId}/status:
+    patch:
+      tags:
+        - Agents
+      summary: Update pickup status
+      description: Update pickup status (InTransit → PickedUp → Delivered)
+      parameters:
+        - in: path
+          name: riderId
+          required: true
+          schema:
+            type: number
+          example: 123
+        - in: path
+          name: pickupId
+          required: true
+          schema:
+            type: string
+          example: "507f1f77bcf86cd799439011"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - status
+              properties:
+                status:
+                  type: string
+                  enum: [InTransit, PickedUp, Delivered, Cancelled]
+                  example: "PickedUp"
+            examples:
+              collected:
+                summary: Mark as collected
+                value:
+                  status: "PickedUp"
+              delivered:
+                summary: Mark as delivered
+                value:
+                  status: "Delivered"
+      responses:
+        "200":
+          description: Status updated successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: "success"
+                  message:
+                    type: string
+                    example: "Pickup status updated to PickedUp"
+                  data:
+                    type: object
+                    properties:
+                      trackingId:
+                        type: string
+                        example: "REC123456"
+                      newStatus:
+                        type: string
+                        example: "PickedUp"
+        "400":
+          description: Invalid status transition
+        "500":
+          description: Internal server error
+
+  /api/v1/agents/{riderId}/pickups/{pickupId}/cancel:
+    post:
+      tags:
+        - Agents
+      summary: Cancel a pickup
+      description: Cancel pending or in-transit pickup
+      parameters:
+        - in: path
+          name: riderId
+          required: true
+          schema:
+            type: number
+          example: 123
+        - in: path
+          name: pickupId
+          required: true
+          schema:
+            type: string
+          example: "507f1f77bcf86cd799439011"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                reason:
+                  type: string
+                  example: "Customer not available"
+      responses:
+        "200":
+          description: Pickup cancelled successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: "success"
+                  message:
+                    type: string
+                    example: "Pickup cancelled successfully"
+                  data:
+                    type: object
+                    properties:
+                      trackingId:
+                        type: string
+                        example: "REC123456"
+                      newStatus:
+                        type: string
+                        example: "Cancelled"
+
+  /api/v1/location/update:
+    post:
+      tags:
+        - Location
+      summary: Update rider location
+      description: Update rider's real-time location in Firebase
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - riderId
+                - lat
+                - lng
+              properties:
+                riderId:
+                  type: number
+                  example: 123
+                lat:
+                  type: number
+                  example: 6.5244
+                  description: Latitude (-90 to 90)
+                lng:
+                  type: number
+                  example: 3.3792
+                  description: Longitude (-180 to 180)
+                heading:
+                  type: number
+                  example: 45
+                  description: Direction in degrees (0-360)
+      responses:
+        "200":
+          description: Location updated successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: "success"
+                  message:
+                    type: string
+                    example: "Location updated successfully"
+        "400":
+          description: Invalid coordinates
+        "500":
+          description: Internal server error
+
+  /api/v1/location/{riderId}:
+    get:
+      tags:
+        - Location
+      summary: Get rider location
+      description: Retrieve rider's current location from Firebase
+      parameters:
+        - in: path
+          name: riderId
+          required: true
+          schema:
+            type: number
+          example: 123
+      responses:
+        "200":
+          description: Location retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: "success"
+                  data:
+                    type: object
+                    properties:
+                      lat:
+                        type: number
+                        example: 6.5244
+                      lng:
+                        type: number
+                        example: 3.3792
+                      heading:
+                        type: number
+                        example: 45
+                      timestamp:
+                        type: number
+                        example: 1672531200000
+        "404":
+          description: Location not found for this rider
+        "500":
+          description: Internal server error
+
+    delete:
+      tags:
+        - Location
+      summary: Remove rider location
+      description: Delete rider location from Firebase (go offline)
+      parameters:
+        - in: path
+          name: riderId
+          required: true
+          schema:
+            type: number
+          example: 123
+      responses:
+        "200":
+          description: Location removed successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: "success"
+                  message:
+                    type: string
+                    example: "Location removed successfully"
+
+  /api/v1/admin/stats/dashboard:
+    get:
+      tags:
+        - Admin
+      summary: Get dashboard statistics
+      description: Retrieve overall dashboard statistics including users, riders, revenue, and growth metrics
+      responses:
+        "200":
+          description: Dashboard statistics retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: "success"
+                  message:
+                    type: string
+                    example: "Dashboard statistics fetched successfully"
+                  data:
+                    $ref: "#/components/schemas/DashboardStats"
+        "500":
+          description: Internal server error
+
+  /api/v1/admin/stats/users:
+  get:
+    tags:
+      - Admin
+    summary: Get detailed user statistics
+    description: Retrieve detailed user statistics broken down by status and role
+    responses:
+      "200":
+        description: User statistics retrieved successfully
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                status:
+                  type: string
+                  example: "success"
+                message:
+                  type: string
+                  example: "User statistics fetched successfully"
+                data:
+                  $ref: "#/components/schemas/UserStats"
+      "500":
+        description: Internal server error
+
+  /api/v1/admin/stats/riders:
+    get:
+    tags:
+      - Admin
+    summary: Get detailed rider statistics
+    description: Retrieve detailed rider statistics broken down by status and vehicle type
+    responses:
+      "200":
+        description: Rider statistics retrieved successfully
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                status:
+                  type: string
+                  example: "success"
+                message:
+                  type: string
+                  example: "Rider statistics fetched successfully"
+                data:
+                  $ref: "#/components/schemas/RiderStats"
+      "500":
+        description: Internal server error
+
+  /api/v1/admin/activity/recent:
+    get:
+      tags:
+        - Admin
+      summary: Get recent platform activity
+      description: Retrieve recent platform activity including registrations, approvals, and pickups
+      parameters:
+        - in: query
+          name: limit
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 50
+            default: 10
+          description: Maximum number of activities to return
+      responses:
+        "200":
+          description: Recent activity retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: "success"
+                  message:
+                    type: string
+                    example: "Recent activity fetched successfully"
+                  data:
+                    type: object
+                    properties:
+                      activities:
+                        type: array
+                        items:
+                          $ref: "#/components/schemas/RecentActivity"
+                      summary:
+                        type: object
+                        properties:
+                          newUsers:
+                            type: number
+                            example: 5
+                          newRiders:
+                            type: number
+                            example: 3
+                          newPickups:
+                            type: number
+                            example: 12
+                          newApprovals:
+                            type: number
+                            example: 2
+        "500":
+          description: Internal server error
+
+  /api/v1/admin/alerts/system:
+    get:
+    tags:
+      - Admin
+    summary: Get system alerts
+    description: Retrieve system health alerts and notifications
+    responses:
+      "200":
+        description: System alerts retrieved successfully
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                status:
+                  type: string
+                  example: "success"
+                message:
+                  type: string
+                  example: "System alerts fetched successfully"
+                data:
+                  type: object
+                  properties:
+                    alerts:
+                      type: array
+                      items:
+                        $ref: "#/components/schemas/SystemAlert"
+                    alertCount:
+                      type: number
+                      example: 3
+                    systemHealth:
+                      type: string
+                      enum: [healthy, warning, critical]
+                      example: "warning"
+      "500":
+        description: Internal server error
+
+  /api/v1/admin/auth/check-wallet:
+    post:
+      tags:
+        - Admin
+      summary: Check wallet authentication
+      description: Verify admin wallet credentials and get role information
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - walletAddress
+              properties:
+                walletAddress:
+                  type: string
+                  example: "0x1234567890abcdef1234567890abcdef12345678"
+      responses:
+        "200":
+          description: Wallet authentication checked successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: "success"
+                  data:
+                    type: object
+                    properties:
+                      walletAddress:
+                        type: string
+                      roles:
+                        type: array
+                        items:
+                          type: string
+                        example: ["Admin", "SuperAdmin"]
+                      primaryRole:
+                        type: string
+                        example: "Admin"
+                      userData:
+                        type: object
+                        nullable: true
+                      riderData:
+                        type: object
+                        nullable: true
+        "400":
+          description: Invalid wallet address
+        "404":
+          description: Wallet not found or not authorized
+        "500":
+          description: Internal server error
+
+  /api/v1/admin/riders/pending:
+    get:
+      tags:
+        - Admin
+      summary: Get pending rider approvals
+      description: Retrieve all riders pending approval with their documents
+      responses:
+        "200":
+          description: Pending riders retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: "success"
+                  message:
+                    type: string
+                    example: "Found 5 pending riders"
+                  data:
+                    type: object
+                    properties:
+                      count:
+                        type: number
+                        example: 5
+                      riders:
+                        type: array
+                        items:
+                          $ref: "#/components/schemas/Rider"
+        "500":
+          description: Internal server error
+
+  /api/v1/admin/riders/{riderId}:
+    get:
+      tags:
+        - Admin
+      summary: Get rider details for admin
+      description: Get detailed rider information including documents for admin review
+      parameters:
+        - in: path
+          name: riderId
+          required: true
+          schema:
+            type: number
+          example: 123
+      responses:
+        "200":
+          description: Rider details retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: "success"
+                  data:
+                    $ref: "#/components/schemas/Rider"
+        "404":
+          description: Rider not found
+        "500":
+          description: Internal server error
+
+    patch:
+      tags:
+        - Admin
+      summary: Update rider details (Admin)
+      description: Update rider information (admin only)
+      parameters:
+        - in: path
+          name: riderId
+          required: true
+          schema:
+            type: number
+          example: 123
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  example: "Updated Name"
+                phoneNumber:
+                  type: string
+                  example: "+1234567890"
+                vehicleNumber:
+                  type: string
+                  example: "NEW-123-XY"
+                homeAddress:
+                  type: string
+                  example: "Updated address"
+                riderStatus:
+                  type: string
+                  enum: [Available, Off-line, On-Trip]
+                  example: "Available"
+      responses:
+        "200":
+          description: Rider updated successfully
+        "404":
+          description: Rider not found
+        "500":
+          description: Internal server error
+
+  /api/v1/admin/riders/{riderId}/approval:
+    patch:
+      tags:
+        - Admin
+      summary: Update rider approval status
+      description: Approve or reject a rider application
+      parameters:
+        - in: path
+          name: riderId
+          required: true
+          schema:
+            type: number
+          example: 123
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - status
+              properties:
+                status:
+                  type: string
+                  enum: [approve, reject]
+                  example: "approve"
+                reason:
+                  type: string
+                  example: "Documents verified successfully"
+                  description: "Required for rejection"
+      responses:
+        "200":
+          description: Approval status updated successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: "success"
+                  message:
+                    type: string
+                    example: "Rider approved successfully"
+                  data:
+                    type: object
+                    properties:
+                      riderId:
+                        type: number
+                        example: 123
+                      name:
+                        type: string
+                        example: "John Doe"
+                      approvalStatus:
+                        type: string
+                        example: "Approved"
+        "404":
+          description: Rider not found
+        "500":
+          description: Internal server error
