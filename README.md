@@ -1,6 +1,6 @@
 # ♻️ Pick-n-Get — Decentralized Recycling & Sustainable Marketplace
 
-_Empowering communities to recycle waste, earn rewards, and trade eco-friendly products through blockchain technology._
+_Empowering communities to recycle waste, earn rewards, and trade eco-friendly products through Decentralized Ledger technology._
 
 ---
 
@@ -31,7 +31,7 @@ Pick-n-Get is a comprehensive decentralized platform built on Hedera Hashgraph t
 1. **♻️ Recycling Rewards System** - Users earn HBAR for verified recycling
 2. **🏪 Sustainable Marketplace** - Vendors sell eco-friendly products made from recycled materials
 3. **🚚 Delivery Network** - Verified riders collect recyclables and deliver products
-4. **👥 Community Governance** - Transparent, blockchain-verified operations
+4. **👥 Community Governance** - Transparent, Decentralized Ledger-verified operations
 
 ---
 
@@ -39,7 +39,7 @@ Pick-n-Get is a comprehensive decentralized platform built on Hedera Hashgraph t
 
 ### Overview
 
-The Product Marketplace allows **producers/vendors** to sell sustainable products made from recycled materials directly to consumers, with all transactions recorded on the Hedera blockchain.
+The Product Marketplace allows **producers/vendors** to sell sustainable products made from recycled materials directly to consumers, with all transactions recorded on the Hedera Decentralized Ledger.
 
 ### How It Works
 
@@ -138,14 +138,14 @@ The Product Marketplace allows **producers/vendors** to sell sustainable product
 
 ### Key Features
 
-| Feature                         | Description                                    |
-| ------------------------------- | ---------------------------------------------- |
-| 🔐 **Blockchain Registration**  | All vendors registered on smart contract first |
-| 💰 **USD to HBAR Conversion**   | Automatic price conversion with live rates     |
-| 📦 **Inventory Management**     | Real-time stock tracking on-chain              |
-| 💸 **Instant Payments**         | 90% to vendor, 10% platform fee                |
-| 🔍 **Transparent Transactions** | All sales verified on Hedera                   |
-| 🖼️ **Decentralized Storage**    | Images stored on Hedera File Service           |
+| Feature                                  | Description                                    |
+| ---------------------------------------- | ---------------------------------------------- |
+| 🔐 **Decentralized Ledger Registration** | All vendors registered on smart contract first |
+| 💰 **USD to HBAR Conversion**            | Automatic price conversion with live rates     |
+| 📦 **Inventory Management**              | Real-time stock tracking on-chain              |
+| 💸 **Instant Payments**                  | 90% to vendor, 10% platform fee                |
+| 🔍 **Transparent Transactions**          | All sales verified on Hedera                   |
+| 🖼️ **Decentralized Storage**             | Images stored on Hedera File Service           |
 
 ### Product Categories
 
@@ -363,7 +363,7 @@ POST / api / v1 / users / verify - phone;
 
 ### For Vendors
 
-- ✅ Register on blockchain with verification
+- ✅ Register on Decentralized Ledger with verification
 - ✅ List unlimited products
 - ✅ Real-time inventory tracking
 - ✅ Instant HBAR payments (90% revenue)
@@ -377,7 +377,7 @@ POST / api / v1 / users / verify - phone;
 - ✅ Transparent pricing
 - ✅ Verified product authenticity
 - ✅ Delivery tracking
-- ✅ Blockchain-verified purchases
+- ✅ Decentralized Ledger-verified purchases
 
 ### For the Platform
 
