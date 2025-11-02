@@ -363,7 +363,7 @@ POST / api / v1 / users / verify - phone;
 
 ### For Vendors
 
-- ✅ Register on Decentralized Ledger with verification
+- ✅ Register on Hedera Decentralized Ledger with verification
 - ✅ List unlimited products
 - ✅ Real-time inventory tracking
 - ✅ Instant HBAR payments (90% revenue)
@@ -422,7 +422,7 @@ POST / api / v1 / users / verify - phone;
 **Frontend:**
 
 ```bash
-git clone https://github.com/kemsguy7/pick-n-get-fe
+cd frontend or git clone https://github.com/kemsguy7/pick-n-get-fe
 cd pick-n-get-fe
 npm install
 cp .env.example .env.local
@@ -432,7 +432,7 @@ npm run dev
 **Backend:**
 
 ```bash
-git clone https://github.com/Dev-JoyA/pick-n-get-be
+cd backend or git clone https://github.com/Dev-JoyA/pick-n-get-be
 cd pick-n-get-be
 npm install
 cp .env.example .env
@@ -490,9 +490,9 @@ We welcome contributions! Please read our contributing guidelines before submitt
 
 - **Project Lead**: Matthew Idungafa
 - **Technical Lead**: Joy Aruku
-- **Website**: [Coming Soon]
+- **Website**: https://pick-n-get-fe.vercel.app/
 - **Email**: support@picknget.com
 
 ---
 
-♻️ **Pick-n-Get, keeping African Cities Clean**
+♻️ **Pick-n-Get: keeping African Cities Clean**
