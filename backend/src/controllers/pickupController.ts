@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
-import { findNearestRiders } from '../services/riderFinderService.ts';
-import { createPickup } from '../services/pickupService.ts';
-import { calculateVehicleType } from '../utils/vehicleCalculator.ts';
+import { findNearestRiders } from '../services/riderFinderService.js';
+import { createPickup } from '../services/pickupService.js';
+import { calculateVehicleType } from '../utils/vehicleCalculator.js';
 // import { VehicleType } from '../interface/deliveryInterface';
 
 /**

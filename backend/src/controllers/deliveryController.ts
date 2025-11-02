@@ -8,14 +8,14 @@ import {
   updateRiderApproval,
   createRider,
   getRiderById,
-} from '../services/deliveryService.ts';
+} from '../services/deliveryService.js';
 
 import {
   IPickUpDetails,
   IRiderDetails,
   Rider,
   VehicleType,
-} from '../interface/deliveryInterface.ts';
+} from '../interface/deliveryInterface.js';
 
 export const RegisterRider = async (req: Request, res: Response) => {
   try {
@@ -35,7 +35,7 @@ export const RegisterRider = async (req: Request, res: Response) => {
       vehiclePlateNumber,
       vehicleColor,
 
-      // IPFS CIDs from frontend
+      // HFS ID from frontend
       profileImage,
       driversLicense,
       vehicleRegistration,

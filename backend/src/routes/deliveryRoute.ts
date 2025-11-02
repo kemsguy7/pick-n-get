@@ -9,7 +9,7 @@ import {
   UpdateRiderApproval,
   RegisterRider,
   CheckRiderRegistration,
-} from '../controllers/deliveryController.ts';
+} from '../controllers/deliveryController.js';
 
 const route = express.Router();
 

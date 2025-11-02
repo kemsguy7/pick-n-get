@@ -4,8 +4,8 @@ import {
   getPendingRiders,
   updateRiderDetails,
   getRiderById,
-} from '../services/deliveryService';
-import { checkWalletRoles } from '../services/authService';
+} from '../services/deliveryService.js';
+import { checkWalletRoles } from '../services/authService.js';
 
 /**
  * Get pending riders for admin approval

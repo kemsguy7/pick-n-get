@@ -1,7 +1,7 @@
 {
   "name": "pick-n-get-be",
   "version": "1.0.0",
-  "main": "server.ts",
+  "main": "dist/server.js",
   "type": "module",
   "scripts": {
     "start": "node dist/server.js",

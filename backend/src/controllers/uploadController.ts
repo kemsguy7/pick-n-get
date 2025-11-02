@@ -1,6 +1,6 @@
 // src/controllers/uploadController.ts
 import { Request, Response } from 'express';
-import { uploadToHederaFS, validateFile } from '../services/hederaFileService';
+import { uploadToHederaFS, validateFile } from '../services/hederaFileService.js';
 
 /**
  * Upload a single document to Hedera File Service

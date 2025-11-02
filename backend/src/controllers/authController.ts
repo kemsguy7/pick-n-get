@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
-import { Rider } from '../interface/deliveryInterface';
-import { User, UserRole } from '../models/userModel';
-import { checkWalletRoles } from '../services/authService';
+import { Rider } from '../interface/deliveryInterface.js';
+import { User, UserRole } from '../models/userModel.js';
+import { checkWalletRoles } from '../services/authService.js';
 
 /**
  * Verify rider by phone number

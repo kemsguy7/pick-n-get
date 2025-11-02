@@ -6,7 +6,7 @@ import {
   getRiderDetailsForAdmin,
   checkWalletAuth,
   saveRiderFromBlockchain,
-} from '../controllers/adminController';
+} from '../controllers/adminController.js';
 
 import {
   getDashboardStats,
@@ -14,7 +14,7 @@ import {
   getRiderStats,
   getRecentActivity,
   getSystemAlerts,
-} from '../controllers/adminController_stats';
+} from '../controllers/adminController_stats.js';
 
 const router = express.Router();
 

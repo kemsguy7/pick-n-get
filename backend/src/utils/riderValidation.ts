@@ -1,4 +1,4 @@
-import { VehicleType, RiderStatus, ApprovalStatus } from '../interface/deliveryInterface';
+import { VehicleType, RiderStatus, ApprovalStatus } from '../interface/deliveryInterface.js';
 export const validateRiderRegistrationData = (data: any) => {
   const errors: string[] = [];
 
