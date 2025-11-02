@@ -36,7 +36,7 @@ Pick-n-Get is a **3-tier decentralized application** that combines:
 - **Styling:** Tailwind CSS 4
 - **State Management:** React Context + Zustand
 - **Wallet Integration:** MetaMask, WalletConnect 2.x
-- **File Upload:** Pinata (IPFS)
+- **File Upload:** Hedera File Service (HFS)
 - **Maps:** Google Maps API, Mapbox
 - **Real-time:** Firebase Realtime Database, Socket.io
 
@@ -102,8 +102,8 @@ Pick-n-Get is a **3-tier decentralized application** that combines:
         │             │             │
         ▼             ▼             ▼
 ┌─────────────┐ ┌─────────────┐ ┌─────────────┐
-│   HEDERA    │ │   BACKEND   │ │    IPFS     │
-│   NETWORK   │ │     API     │ │  (Pinata)   │
+│   HEDERA    │ │   BACKEND   │ │  HEDERA     │
+│   NETWORK   │ │     API     │ │  FILE SVC   │
 └─────────────┘ └─────────────┘ └─────────────┘
 
 ═══════════════════════════════════════════════════════════════════════════
@@ -209,9 +209,9 @@ Pick-n-Get is a **3-tier decentralized application** that combines:
 ═══════════════════════════════════════════════════════════════════════════
 
 ┌──────────────┐  ┌──────────────┐  ┌──────────────┐  ┌──────────────┐
-│    Pinata    │  │  Google Maps │  │    Mapbox    │  │   Firebase   │
-│    (IPFS)    │  │   (Geocode)  │  │  (Routing)   │  │   (Auth)     │
-│              │  │              │  │              │  │              │
+│   Hedera     │  │  Google Maps │  │    Mapbox    │  │   Firebase   │
+│  File Service│  │   (Geocode)  │  │  (Routing)   │  │   (Auth)     │
+│    (HFS)     │  │              │  │              │  │              │
 │  • Images    │  │  • Address   │  │  • Rider     │  │  • Realtime  │
 │  • Documents │  │    lookup    │  │    routing   │  │    DB        │
 │  • Metadata  │  │  • Distance  │  │  • ETA calc  │  │  • FCM       │
@@ -305,10 +305,11 @@ shopProduct(productId, qty) payable
 ┌────────────────┐
 │   Frontend     │ 2. Fill form (name, address, phone, photo)
 └─────┬──────────┘
-      │ 3. Upload photo to Pinata
+      │ 3. Upload photo to Hedera File Service
       ▼
 ┌────────────────┐
-│   Pinata IPFS  │ Returns: File ID "QmXyz..."
+│  Hedera File   │ Returns: File ID "0.0.4523891"
+│    Service     │
 └─────┬──────────┘
       │ 4. Call registerUser() with File ID
       ▼
@@ -336,12 +337,12 @@ shopProduct(productId, qty) payable
       │
       ▼
 ┌────────────────┐
-│   Frontend     │ 2. Upload photo to Pinata
+│   Frontend     │ 2. Upload photo to Hedera File Service
 └─────┬──────────┘
-      │ Returns: "QmAbc123..."
+      │ Returns: "0.0.4523892"
       ▼
 ┌──────────────────────┐
-│  PicknGet Contract   │ 3. recycleItem("plastic", 2500, "Bottles", "QmAbc...")
+│  PicknGet Contract   │ 3. recycleItem("plastic", 2500, "Bottles", "0.0.4523892")
 └─────┬────────────────┘
       │ 4. Emit ItemRecycled(userId, itemId, weight)
       ▼
@@ -418,7 +419,7 @@ shopProduct(productId, qty) payable
   phoneNumber: String,
   address: String,
   country: String,
-  profileImage: String,    // Pinata CID
+  profileImage: String,    // Hedera File ID (e.g., "0.0.4523891")
   roles: [String],         // ["Recycler", "Admin"]
   status: String,          // "Active", "Banned"
   totalRecycled: Number,   // kg
@@ -445,11 +446,11 @@ shopProduct(productId, qty) payable
   riderStatus: String,     // "Available", "OnTrip", "Offline"
   approvalStatus: String,  // "Pending", "Approved", "Rejected"
   documents: {
-    profileImage: String,
-    driversLicense: String,
-    vehicleRegistration: String,
-    insuranceCertificate: String,
-    vehiclePhotos: String,
+    profileImage: String,            // Hedera File ID (e.g., "0.0.4523893")
+    driversLicense: String,          // Hedera File ID (e.g., "0.0.4523894")
+    vehicleRegistration: String,     // Hedera File ID (e.g., "0.0.4523895")
+    insuranceCertificate: String,    // Hedera File ID (e.g., "0.0.4523896")
+    vehiclePhotos: String,           // Hedera File ID (e.g., "0.0.4523897")
   },
   createdAt: Date,
 }
@@ -473,7 +474,7 @@ shopProduct(productId, qty) payable
   itemCategory: String,
   itemWeight: Number,      // kg
   itemDescription: String,
-  itemImages: [String],    // Pinata CIDs
+  itemImages: [String],    // Hedera File IDs (e.g., ["0.0.4523898", "0.0.4523899"])
   estimatedEarnings: Number,
   pickUpStatus: String,    // "Pending", "InTransit", "PickedUp", "Delivered"
   requestedAt: Date,
@@ -497,7 +498,7 @@ shopProduct(productId, qty) payable
   priceUSD: Number,        // Calculated
   quantity: Number,
   weight: Number,          // kg
-  imageFileId: String,     // Hedera File ID
+  imageFileId: String,     // Hedera File ID (e.g., "0.0.4523900")
   imageUrl: String,        // HashScan URL
   txHash: String,          // Creation transaction
   status: String,          // "Available", "SoldOut"
@@ -570,7 +571,7 @@ POST   /api/v1/products/:productId/sale
 
 ### 3. Data Protection
 
-- **IPFS:** Immutable document storage
+- **Hedera File Service:** Immutable document storage
 - **MongoDB:** Encrypted at rest
 - **API:** HTTPS only, CORS restrictions
 - **Rate limiting:** 100 req/min per IP

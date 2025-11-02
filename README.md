@@ -249,7 +249,6 @@ User sees payment in <5 seconds (Hedera finality)
 - [ ] Node.js 18+ installed ([Download](https://nodejs.org))
 - [ ] MongoDB running (local or [Atlas](https://mongodb.com/cloud/atlas))
 - [ ] Hedera Testnet account ([Create account](https://portal.hedera.com))
-- [ ] Pinata account for IPFS ([Sign up](https://pinata.cloud))
 - [ ] Firebase project ([Console](https://console.firebase.google.com))
 
 ### Step 1: Clone Repository (30 seconds)
@@ -312,10 +311,6 @@ NEXT_PUBLIC_BACKEND_API_URL=http://localhost:5000/api/v1
 NEXT_PUBLIC_HEDERA_NETWORK=testnet
 NEXT_PUBLIC_CONTRACT_ADDRESS=0.0.7162853
 
-# Pinata
-IPFS_WRITE_API_KEY=your_key
-IPFS_WRITE_API_SECRET=your_secret
-NEXT_PUBLIC_IPFS_WRITE_JWT=your_jwt
 
 # WalletConnect
 NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID=your_project_id
@@ -367,7 +362,7 @@ npm run dev
          │
          ▼
 ┌─────────────────────────────────────────────────────────────────┐
-│               DECENTRALIZED STORAGE (IPFS/Pinata)               │
+│               DECENTRALIZED STORAGE (Hedera File Service)       │
 └─────────────────────────────────────────────────────────────────┘
 ```
 
@@ -427,7 +422,7 @@ pick-n-get/
 
 ### For Riders
 
-✅ KYC with IPFS documents  
+✅ KYC with documents Uploaded to Hedera file system  
 ✅ Vehicle management  
 ✅ Smart routing  
 ✅ Earnings tracking
