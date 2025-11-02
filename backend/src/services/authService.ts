@@ -1,5 +1,6 @@
-import { User, UserRole } from '../models/userModel';
-import { Rider, ApprovalStatus } from '../interface/deliveryInterface';
+import { User, UserRole } from '../models/userModel.js';
+import { Rider, ApprovalStatus } from '../interface/deliveryInterface.js';
+import { Producer } from '../models/productModel.js';
 
 const SUPER_ADMIN_WALLET = process.env.SUPER_ADMIN_WALLET || '';
 
@@ -17,6 +18,12 @@ export interface UserRoleInfo {
     approvalStatus: string;
     riderStatus: string;
   };
+  vendorData?: {
+    vendorId: number;
+    registrationId: number;
+    approvalStatus: string;
+    businessName: string;
+  };
 }
 
 /**
@@ -24,8 +31,10 @@ export interface UserRoleInfo {
  */
 export async function checkWalletRoles(walletAddress: string): Promise<UserRoleInfo> {
   const roles: string[] = [];
+  let primaryRole = 'Guest';
   let userData: UserRoleInfo['userData'];
   let riderData: UserRoleInfo['riderData'];
+  let vendorData: UserRoleInfo['vendorData'];
 
   // ✅ Check if wallet is SuperAdmin (from env)
   if (SUPER_ADMIN_WALLET && walletAddress.toLowerCase() === SUPER_ADMIN_WALLET.toLowerCase()) {
@@ -46,6 +55,15 @@ export async function checkWalletRoles(walletAddress: string): Promise<UserRoleI
       name: user.name,
       profileImage: user.profileImage,
     };
+
+    // Set primary role based on user roles
+    if (user.roles.includes(UserRole.SuperAdmin as UserRole)) {
+      primaryRole = 'SuperAdmin';
+    } else if (user.roles.includes(UserRole.Admin as UserRole)) {
+      primaryRole = 'Admin';
+    } else if (user.roles.includes(UserRole.Recycler as UserRole)) {
+      primaryRole = 'Recycler';
+    }
   }
 
   // Check if wallet is registered as Rider in DB
@@ -60,18 +78,48 @@ export async function checkWalletRoles(walletAddress: string): Promise<UserRoleI
       approvalStatus: rider.approvalStatus,
       riderStatus: rider.riderStatus,
     };
+
+    // Rider takes priority over Recycler
+    if (primaryRole === 'Recycler' || primaryRole === 'Guest') {
+      primaryRole = 'Rider';
+    }
   }
 
-  // Determine primary role (priority order)
-  const rolesPriority = ['SuperAdmin', 'Admin', 'Rider', 'Recycler'];
-  const primaryRole = rolesPriority.find((r) => roles.includes(r)) || 'Guest';
+  // ✅ Check if wallet is registered as Producer/Vendor in DB
+  const producer = await Producer.findOne({ walletAddress });
+  if (producer) {
+    if (!roles.includes('Vendor')) {
+      roles.push('Vendor');
+    }
+
+    vendorData = {
+      vendorId: producer.registrationId,
+      registrationId: producer.registrationId,
+      approvalStatus: producer.isVerified ? 'Approved' : 'Pending',
+      businessName: producer.businessName || producer.name,
+    };
+
+    // ✅ Vendor takes priority (most recent addition)
+    if (primaryRole === 'Recycler' || primaryRole === 'Rider' || primaryRole === 'Guest') {
+      primaryRole = 'Vendor';
+    }
+  }
+
+  // Remove duplicates and ensure at least one role
+  const uniqueRoles = Array.from(new Set(roles));
+  const finalRoles = uniqueRoles.length > 0 ? uniqueRoles : ['Guest'];
+
+  // If primaryRole is still Guest but we have roles, use the first role
+  const finalPrimaryRole =
+    primaryRole === 'Guest' && uniqueRoles.length > 0 ? uniqueRoles[0] : primaryRole;
 
   return {
     walletAddress,
-    roles: [...new Set(roles)], // Remove duplicates
-    primaryRole,
+    roles: finalRoles,
+    primaryRole: finalPrimaryRole,
     userData,
     riderData,
+    vendorData,
   };
 }
 
@@ -108,10 +156,11 @@ export async function addRoleToUser(
       success: true,
       message: `${role} role added successfully`,
     };
-  } catch (error: any) {
+  } catch (error) {
+    const message = error instanceof Error ? error.message : 'Failed to add role';
     return {
       success: false,
-      message: error.message || 'Failed to add role',
+      message,
     };
   }
 }
@@ -147,10 +196,11 @@ export async function removeRoleFromUser(
       success: true,
       message: `${role} role removed successfully`,
     };
-  } catch (error: any) {
+  } catch (error) {
+    const message = error instanceof Error ? error.message : 'Failed to remove role';
     return {
       success: false,
-      message: error.message || 'Failed to remove role',
+      message,
     };
   }
 }

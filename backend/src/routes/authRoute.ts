@@ -4,7 +4,7 @@ import {
   verifyUserPhone,
   saveUserFromContract,
   checkWalletAuth,
-} from '../controllers/authController';
+} from '../controllers/authController.js';
 
 const router = express.Router();
 

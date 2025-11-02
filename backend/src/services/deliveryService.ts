@@ -7,9 +7,10 @@ import {
   PickUp,
   Rider,
   ApprovalStatus,
-} from '../interface/deliveryInterface.ts';
+} from '../interface/deliveryInterface.js';
 import fetch from 'node-fetch';
-import { session, database } from '../config/db.ts';
+import { session, database } from '../config/db.js';
+import { AnyARecord } from 'dns';
 
 const selectRide = async (type: VehicleType, country: string, pickupAddress: string) => {
   const riders = await Rider.find({
@@ -421,7 +422,7 @@ export const getAllRiders = async () => {
   try {
     const riders = await Rider.find({});
 
-    const ridersData = riders.map((rider) => ({
+    const ridersData = riders.map((rider : any) => ({
       riderId: rider.id,
       name: rider.name,
       phoneNumber: rider.phoneNumber,
@@ -514,7 +515,7 @@ export const getPendingRiders = async () => {
       approvalStatus: 'Pending',
     }).sort({ createdAt: -1 });
 
-    const ridersData = pendingRiders.map((rider) => ({
+    const ridersData = pendingRiders.map((rider: any) => ({
       riderId: rider.id,
       name: rider.name,
       phoneNumber: rider.phoneNumber,

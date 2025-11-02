@@ -1,5 +1,5 @@
-import { PickUp, IPickUp, PickUpStatus } from '../models/pickupModel.ts';
-import { Rider, RiderStatus } from '../interface/deliveryInterface.ts';
+import { PickUp, IPickUp, PickUpStatus } from '../models/pickupModel.js';
+import { Rider, RiderStatus } from '../interface/deliveryInterface.js';
 // import { session } from '../config/db';
 import mongoose from 'mongoose';
 

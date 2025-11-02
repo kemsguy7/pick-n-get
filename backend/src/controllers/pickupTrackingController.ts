@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
-import { PickUp, PickUpStatus } from '../models/pickupModel';
-import { Rider } from '../interface/deliveryInterface';
+import { PickUp, PickUpStatus } from '../models/pickupModel.js';
+import { Rider } from '../interface/deliveryInterface.js';
 
 /**
  * Track a pickup by ID

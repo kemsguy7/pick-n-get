@@ -4,6 +4,7 @@ export enum UserRole {
   Recycler = 'Recycler',
   Admin = 'Admin',
   SuperAdmin = 'SuperAdmin',
+  Vendor = 'Vendor',
 }
 
 export enum UserStatus {

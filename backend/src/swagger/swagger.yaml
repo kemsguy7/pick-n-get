@@ -26,6 +26,10 @@ tags:
     description: Document upload endpoints using Hedera File Service
   - name: Admin
     description: Admin dashboard and management endpoints
+  - name: Products
+    description: Product marketplace management
+  - name: Producers
+    description: Producer/Vendor management
 
 components:
   schemas:
@@ -478,6 +482,170 @@ components:
           type: string
           enum: [low, medium, high]
           example: "medium"
+
+    Producer:
+      type: object
+      properties:
+        registrationId:
+          type: number
+          description: Unique producer identifier
+        walletAddress:
+          type: string
+          description: Blockchain wallet address
+        name:
+          type: string
+          description: Producer's full name
+        businessName:
+          type: string
+          description: Business name
+        country:
+          type: string
+          description: Country of operation
+        phoneNumber:
+          type: string
+          description: Contact phone number
+        isVerified:
+          type: boolean
+          description: Verification status
+        totalProducts:
+          type: number
+          description: Total products listed
+        totalRevenue:
+          type: number
+          description: Total revenue in HBAR
+        totalSales:
+          type: number
+          description: Total number of sales
+        avgRating:
+          type: number
+          description: Average rating (0-5)
+        monthlyGrowth:
+          type: number
+          description: Monthly growth percentage
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+
+    Product:
+      type: object
+      properties:
+        productId:
+          type: number
+          description: Unique product identifier
+        walletAddress:
+          type: string
+          description: Vendor's wallet address
+        name:
+          type: string
+          description: Product name
+        description:
+          type: string
+          description: Product description
+        category:
+          type: string
+          enum:
+            [
+              Bags & Accessories,
+              Furniture,
+              Office Supplies,
+              Fitness & Wellness,
+              Home & Garden,
+              Textiles,
+              Electronics,
+              Others,
+            ]
+        price:
+          type: number
+          description: Price in HBAR
+        priceUSD:
+          type: number
+          description: Price in USD (for display)
+        quantity:
+          type: number
+          description: Available quantity
+        weight:
+          type: number
+          description: Weight in kg
+        imageFileId:
+          type: string
+          description: Hedera File Service ID
+        imageUrl:
+          type: string
+          description: Full image URL
+        txHash:
+          type: string
+          description: Blockchain transaction hash
+        status:
+          type: string
+          enum: [Available, Sold Out, Inactive]
+        views:
+          type: number
+          description: Number of views
+        sales:
+          type: number
+          description: Number of sales
+        revenue:
+          type: number
+          description: Total revenue
+        recycledPercentage:
+          type: number
+          description: Percentage of recycled material
+        carbonNeutral:
+          type: boolean
+          description: Carbon neutral status
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+
+    ProductOrder:
+      type: object
+      properties:
+        orderId:
+          type: string
+          description: Unique order identifier
+        productId:
+          type: number
+          description: Product ID
+        vendorWalletAddress:
+          type: string
+          description: Vendor's wallet address
+        customerWalletAddress:
+          type: string
+          description: Customer's wallet address
+        customerName:
+          type: string
+          description: Customer name
+        productName:
+          type: string
+          description: Product name
+        quantity:
+          type: number
+          description: Quantity ordered
+        totalAmount:
+          type: number
+          description: Total amount in HBAR
+        status:
+          type: string
+          enum: [Pending, Processing, Shipped, Delivered, Cancelled]
+        deliveryAddress:
+          type: string
+          description: Delivery address
+        txHash:
+          type: string
+          description: Transaction hash
+        orderDate:
+          type: string
+          format: date-time
+        deliveryDate:
+          type: string
+          format: date-time
+          nullable: true
 
     Error:
       type: object
@@ -2222,3 +2390,540 @@ paths:
           description: Rider not found
         "500":
           description: Internal server error
+
+  /api/v1/products/producers:
+    post:
+      tags:
+        - Producers
+      summary: Register a new producer/vendor
+      description: Register vendor in the marketplace system
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - walletAddress
+                - name
+                - country
+                - phoneNumber
+              properties:
+                registrationId:
+                  type: number
+                  example: 1730425537000
+                walletAddress:
+                  type: string
+                  example: "0x0e54c9054f000849a5f82d53914daaf97f306e95"
+                name:
+                  type: string
+                  example: "Matthew Idungafa"
+                businessName:
+                  type: string
+                  example: "Matthew Eco Products"
+                country:
+                  type: string
+                  example: "Nigeria"
+                phoneNumber:
+                  type: string
+                  example: "2348123456789"
+      responses:
+        "201":
+          description: Producer registered successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: "success"
+                  message:
+                    type: string
+                    example: "Producer registered successfully"
+                  data:
+                    type: object
+                    properties:
+                      producerId:
+                        type: number
+                      walletAddress:
+                        type: string
+                      name:
+                        type: string
+                      businessName:
+                        type: string
+        "409":
+          description: Producer already exists
+        "500":
+          description: Internal server error
+
+  /api/v1/products:
+    post:
+      tags:
+        - Products
+      summary: Add a new product
+      description: Add product to marketplace (blockchain + backend)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - productId
+                - walletAddress
+                - name
+                - description
+                - category
+                - price
+                - quantity
+                - weight
+                - imageFileId
+                - txHash
+              properties:
+                productId:
+                  type: number
+                  example: 1
+                walletAddress:
+                  type: string
+                  example: "0x0e54c9054f000849a5f82d53914daaf97f306e95"
+                name:
+                  type: string
+                  example: "Recycled Tote Bag"
+                description:
+                  type: string
+                  example: "Eco-friendly bag made from recycled materials"
+                category:
+                  type: string
+                  example: "Bags & Accessories"
+                price:
+                  type: number
+                  example: 10
+                  description: Price in HBAR
+                priceUSD:
+                  type: number
+                  example: 0.5
+                  description: Price in USD (optional)
+                quantity:
+                  type: number
+                  example: 20
+                weight:
+                  type: number
+                  example: 0.5
+                  description: Weight in kg
+                imageFileId:
+                  type: string
+                  example: "0.0.7179369"
+                  description: Hedera File ID
+                txHash:
+                  type: string
+                  example: "0x306c58ea..."
+                  description: Blockchain transaction hash
+                recycledPercentage:
+                  type: number
+                  example: 85
+                carbonNeutral:
+                  type: boolean
+                  example: true
+      responses:
+        "201":
+          description: Product added successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: "success"
+                  message:
+                    type: string
+                  data:
+                    type: object
+                    properties:
+                      productId:
+                        type: number
+                      name:
+                        type: string
+                      price:
+                        type: number
+                      priceUSD:
+                        type: number
+                      imageUrl:
+                        type: string
+        "400":
+          description: Missing required fields
+        "403":
+          description: Producer not registered
+        "409":
+          description: Product ID already exists
+        "500":
+          description: Internal server error
+
+    get:
+      tags:
+        - Products
+      summary: Get all products
+      description: Retrieve products for shop page with filters
+      parameters:
+        - in: query
+          name: status
+          schema:
+            type: string
+            enum: [Available, Sold Out, Inactive]
+            default: Available
+        - in: query
+          name: category
+          schema:
+            type: string
+        - in: query
+          name: limit
+          schema:
+            type: number
+            default: 50
+        - in: query
+          name: offset
+          schema:
+            type: number
+            default: 0
+      responses:
+        "200":
+          description: Products retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                  data:
+                    type: object
+                    properties:
+                      products:
+                        type: array
+                        items:
+                          $ref: "#/components/schemas/Product"
+                      total:
+                        type: number
+                      limit:
+                        type: number
+                      offset:
+                        type: number
+
+  /api/v1/products/{productId}:
+    get:
+      tags:
+        - Products
+      summary: Get product by ID
+      description: Get detailed product information
+      parameters:
+        - in: path
+          name: productId
+          required: true
+          schema:
+            type: number
+          example: 1
+      responses:
+        "200":
+          description: Product retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                  data:
+                    $ref: "#/components/schemas/Product"
+        "404":
+          description: Product not found
+
+  /api/v1/products/vendors/{walletAddress}/stats:
+    get:
+      tags:
+        - Producers
+      summary: Get vendor statistics
+      description: Get vendor performance metrics
+      parameters:
+        - in: path
+          name: walletAddress
+          required: true
+          schema:
+            type: string
+          example: "0x0e54c9054f000849a5f82d53914daaf97f306e95"
+      responses:
+        "200":
+          description: Stats retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                  data:
+                    type: object
+                    properties:
+                      totalProducts:
+                        type: number
+                      totalRevenue:
+                        type: number
+                      totalSales:
+                        type: number
+                      avgRating:
+                        type: number
+                      monthlyGrowth:
+                        type: number
+        "404":
+          description: Producer not found
+
+  /api/v1/products/vendors/{walletAddress}/products:
+    get:
+      tags:
+        - Producers
+      summary: Get vendor products
+      description: Get all products from a specific vendor
+      parameters:
+        - in: path
+          name: walletAddress
+          required: true
+          schema:
+            type: string
+        - in: query
+          name: status
+          schema:
+            type: string
+        - in: query
+          name: category
+          schema:
+            type: string
+        - in: query
+          name: limit
+          schema:
+            type: number
+            default: 50
+        - in: query
+          name: offset
+          schema:
+            type: number
+            default: 0
+      responses:
+        "200":
+          description: Products retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                  data:
+                    type: object
+                    properties:
+                      products:
+                        type: array
+                        items:
+                          $ref: "#/components/schemas/Product"
+                      total:
+                        type: number
+
+    /api/v1/products/vendors/{walletAddress}/orders:
+      get:
+        tags:
+          - Producers
+        summary: Get vendor orders
+        description: Get all orders for vendor's products
+        parameters:
+          - in: path
+            name: walletAddress
+            required: true
+            schema:
+              type: string
+          - in: query
+            name: status
+            schema:
+              type: string
+              enum: [Pending, Processing, Shipped, Delivered, Cancelled]
+          - in: query
+            name: limit
+            schema:
+              type: number
+              default: 50
+        responses:
+          "200":
+            description: Orders retrieved successfully
+            content:
+              application/json:
+                schema:
+                  type: object
+                  properties:
+                    status:
+                      type: string
+                    data:
+                      type: object
+                      properties:
+                        orders:
+                          type: array
+                          items:
+                            $ref: "#/components/schemas/ProductOrder"
+                        total:
+                          type: number
+
+  /api/v1/products/conversion/hbar-to-usd:
+    get:
+      tags:
+        - Products
+      summary: Get HBAR to USD conversion rate
+      description: Get current conversion rate
+      parameters:
+        - in: query
+          name: amount
+          schema:
+            type: number
+          description: HBAR amount to convert
+      responses:
+        "200":
+          description: Rate retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                  data:
+                    type: object
+                    properties:
+                      hbar:
+                        type: number
+                      usd:
+                        type: number
+                      rate:
+                        type: number
+
+  /api/v1/products/conversion/usd-to-hbar:
+    post:
+      tags:
+        - Products
+      summary: Convert USD to HBAR
+      description: Convert USD amount to HBAR
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - usd
+              properties:
+                usd:
+                  type: number
+                  example: 10
+      responses:
+        "200":
+          description: Conversion successful
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                  data:
+                    type: object
+                    properties:
+                      usd:
+                        type: number
+                      hbar:
+                        type: number
+                      rate:
+                        type: number
+  /api/v1/products/{productId}/status:
+    patch:
+      tags:
+        - Products
+      summary: Update product status
+      description: Change product availability status
+      parameters:
+        - in: path
+          name: productId
+          required: true
+          schema:
+            type: number
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - status
+              properties:
+                status:
+                  type: string
+                  enum: [Available, Sold Out, Inactive]
+      responses:
+        "200":
+          description: Status updated successfully
+        "404":
+          description: Product not found
+
+  /api/v1/products/{productId}/sale:
+    post:
+      tags:
+        - Products
+      summary: Record product sale
+      description: Record a product sale after blockchain purchase
+      parameters:
+        - in: path
+          name: productId
+          required: true
+          schema:
+            type: number
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - quantity
+                - totalAmount
+                - customerWalletAddress
+                - customerName
+                - deliveryAddress
+                - txHash
+              properties:
+                quantity:
+                  type: number
+                totalAmount:
+                  type: number
+                customerWalletAddress:
+                  type: string
+                customerName:
+                  type: string
+                deliveryAddress:
+                  type: string
+                txHash:
+                  type: string
+      responses:
+        "201":
+          description: Sale recorded successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                  message:
+                    type: string
+                  data:
+                    type: object
+                    properties:
+                      orderId:
+                        type: string
+                      productId:
+                        type: number
+                      remainingQuantity:
+                        type: number

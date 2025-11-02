@@ -3,14 +3,16 @@ import dotenv from 'dotenv';
 import cors from 'cors';
 import helmet from 'helmet';
 import morgan from 'morgan';
-import { startServer } from './src/config/db.ts';
-import route from './src/routes/deliveryRoute.ts';
-import locationRoutes from './src/routes/locationRoute.ts';
-import pickupRoutes from './src/routes/pickupRoute.ts';
-import agentRoutes from './src/routes/agentRoute.ts';
-import authRoutes from './src/routes/authRoute.ts';
-import uploadRoutes from './src/routes/uploadRoute.ts';
-import adminRoutes from './src/routes/adminRoutes';
+import { startServer } from './src/config/db.js';
+import route from './src/routes/deliveryRoute.js';
+import locationRoutes from './src/routes/locationRoute.js';
+import pickupRoutes from './src/routes/pickupRoute.js';
+import agentRoutes from './src/routes/agentRoute.js';
+import authRoutes from './src/routes/authRoute.js';
+import deliveryRoutes from './src/routes/deliveryRoute.js';
+import uploadRoutes from './src/routes/uploadRoute.js';
+import adminRoutes from './src/routes/adminRoutes.js';
+import productRoutes from './src/routes/productRoute.js';
 
 import cron from 'node-cron';
 import https from 'https';
@@ -74,8 +76,10 @@ app.use('/api/v1/pickups', pickupRoutes);
 app.use('/api/v1/location', locationRoutes);
 app.use('/api/v1/agents', agentRoutes);
 app.use('/api/v1/upload', uploadRoutes); // Upload routes for Hedera File Service
+app.use('/api/v1/delivery', deliveryRoutes);
 app.use('/api/v1/auth', authRoutes); //auth routes
 app.use('/api/v1/admin', adminRoutes);
+app.use('/api/v1/products', productRoutes);
 
 // 404 handler
 app.use((req: Request, res: Response) => {

@@ -1,4 +1,4 @@
-import { VehicleType } from '../interface/deliveryInterface.ts';
+import { VehicleType } from '../interface/deliveryInterface.js';
 
 /**
  * Calculate required vehicle type based on item weight
