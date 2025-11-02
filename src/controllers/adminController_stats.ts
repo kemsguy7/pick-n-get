@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
 import { Rider, ApprovalStatus, VehicleType } from '../models/riderModel.js';
-import { User, UserRole, UserStatus } from '../models/userModel';
-import { PickUp, PickUpStatus } from '../models/pickupModel';
+import { User, UserRole, UserStatus } from '../models/userModel.js';
+import { PickUp, PickUpStatus } from '../models/pickupModel.js';
 
 /**
  * Get overall dashboard statistics

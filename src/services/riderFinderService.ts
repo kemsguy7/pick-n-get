@@ -1,6 +1,6 @@
-import { Rider, RiderStatus, ApprovalStatus } from '../interface/deliveryInterface.ts';
-import { VehicleType } from '../interface/deliveryInterface.ts';
-import { database } from '../config/db.ts';
+import { Rider, RiderStatus, ApprovalStatus } from '../interface/deliveryInterface.js';
+import { VehicleType } from '../interface/deliveryInterface.js';
+import { database } from '../config/db.js';
 import fetch from 'node-fetch';
 
 const MAPBOX_API_KEY = process.env.MAPBOX_API_KEY;

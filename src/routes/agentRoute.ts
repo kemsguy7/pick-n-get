@@ -5,7 +5,7 @@ import {
   acceptPickupJob,
   updatePickupStatus,
   getAgentStats,
-} from '../controllers/agentController.ts';
+} from '../controllers/agentController.js';
 
 const router = express.Router();
 

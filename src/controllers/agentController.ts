@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
-import { PickUp, PickUpStatus } from '../models/pickupModel.ts';
-import { Rider, RiderStatus } from '../interface/deliveryInterface.ts';
+import { PickUp, PickUpStatus } from '../models/pickupModel.js';
+import { Rider, RiderStatus } from '../interface/deliveryInterface.js';
 
 /**
  * Get agent's active pickups

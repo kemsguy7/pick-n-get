@@ -1,10 +1,10 @@
 import express from 'express';
-import { findRiders, createPickupRequest } from '../controllers/pickupController.ts';
+import { findRiders, createPickupRequest } from '../controllers/pickupController.js';
 import {
   trackPickup,
   getUserActivePickups,
   getUserPickupHistory,
-} from '../controllers/pickupTrackingController.ts';
+} from '../controllers/pickupTrackingController.js';
 
 const router = express.Router();
 

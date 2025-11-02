@@ -8,7 +8,7 @@ export {
   ApprovalStatus,
   Rider,
   type IRiderDetails, // Use 'type' keyword for interface
-} from '../models/riderModel';
+} from '../models/riderModel.js';
 
 export enum PickUpStatus {
   Pending = 'Pending',
