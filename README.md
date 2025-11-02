@@ -519,8 +519,8 @@ For enterprise licensing: support@pick-n-get.io
 ### Maintainers
 
 - **Matthew Idungafa** (Project Lead) - [@kemsguy7](https://github.com/kemsguy7)
-- **Joy Aruku** (Technical Lead) - [@Dev-JoyA](https://github.com/Dev-JoyA)
-- **Nkiru Medaleine** (Team Member) - [@nkirumedaleine](https://www.linkedin.com/in/anagha-madeleine/)
+- **Joy Aruku** (Backend Lead) - [@Dev-JoyA](https://github.com/Dev-JoyA)
+- **Nkiru Medaleine** (Design Lead) - [@nkirumedaleine](https://www.linkedin.com/in/anagha-madeleine/)
 
 ### Community
 
