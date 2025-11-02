@@ -1,4 +1,3 @@
-````markdown
 # EcoCleans Backend - Web3 Recycling Platform API
 
 **Backend Services for Waste Management & Rider Operations**
@@ -14,34 +13,43 @@
 
 ### Installation
 
-```bash
+
 # Clone and install
+```bash
 git clone <repository-url>
 cd ecocleans-n-get-be
 npm install
+```
 
 # Environment setup
+```bash
 cp .env.example .env
 # Edit .env with your credentials
+```
 
 # Development
+```bash
 npm run dev
+```
 
 # Production
+```bash
 npm run build
 npm start
 ```
-````
+
 
 ## ⚙️ Environment Configuration
 
-```bash
 # Server
 PORT=5000
 NODE_ENV=development
 
+
 # Database
+
 MONGODB_URI=mongodb://localhost:27017/ecocleans
+
 
 # Firebase
 DATABASE_URL=https://your-project.firebaseio.com/
@@ -52,9 +60,8 @@ STORAGEBUCKET=your-project.appspot.com
 MESSAGINGSENDERID=your_sender_id
 APPID=your_app_id
 
-```
-  Add firebase-service-account.json file in root directory 
-```
+  ## Add firebase-service-account.json file in root directory 
+  
 # Mapbox
 MAPBOX_API_KEY=your_mapbox_api_key
 
@@ -62,7 +69,6 @@ MAPBOX_API_KEY=your_mapbox_api_key
 PRIVATE_KEY=your_encryption_key
 PUBLIC_KEY=your_encryption_key
 FRONTEND_URL=http://localhost:3000
-```
 
 ## 🏗️ Project Structure
 
@@ -210,6 +216,4 @@ mongosh "your_connection_string"
 
 MIT License - see LICENSE file for details.
 
-```
 
-```

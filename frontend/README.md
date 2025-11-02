@@ -1,4 +1,4 @@
-```markdown
+
 # EcoCleans - Web3 Recycling & Waste Management Platform
 
 **Turning Waste into Wealth Through Blockchain Technology**
@@ -424,6 +424,4 @@ This project is licensed under the MIT License - see LICENSE file for details.
 
 **EcoCleans - Where waste becomes wealth, and everyone wins. 🌍♻️💚**
 
-```
 
-```
