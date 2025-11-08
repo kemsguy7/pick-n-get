@@ -184,13 +184,10 @@ export const addProduct = async (req: Request, res: Response) => {
     // Calculate USD price if not provided
     const calculatedPriceUSD = priceUSD || hbarToUsd(price);
 
-    // Generate image URL
-    // const imageUrl = `https://testnet.mirrornode.hedera.com/api/v1/contracts/${imageFileId}/results/contents`;
+    //Generate image URL using backend retrieval endpoint
+    const baseUrl = process.env.BACKEND_URL || 'http://localhost:5000';
+    const imageUrl = `${baseUrl}/api/v1/upload/file/${imageFileId}`;
 
-    // Generate image URL - FIXED VERSION
-    const imageUrl = imageFileId.startsWith('0.0.')
-      ? `https://hashscan.io/testnet/file/${imageFileId}`
-      : imageFileId;
     // Create product
     const newProduct = await Product.create({
       productId,
@@ -644,25 +641,28 @@ export const recordProductSale = async (req: Request, res: Response) => {
   }
 };
 
+// Fix image URLs for all products
+
 /**
- * Fix image URLs for all products (run once)
+ * Fix image URLs for all products (run once to update existing products)
  * POST /api/v1/products/fix-image-urls
- */ export const fixImageUrls = async (req: Request, res: Response) => {
+ */
+export const fixImageUrls = async (req: Request, res: Response) => {
   try {
+    const baseUrl = process.env.BACKEND_URL || 'http://localhost:5000';
     const products = await Product.find({});
     let updated = 0;
 
     for (const product of products) {
       if (product.imageFileId) {
-        // ✅ CORRECT FORMAT
-        const newImageUrl = product.imageFileId.startsWith('0.0.')
-          ? `https://hashscan.io/testnet/file/${product.imageFileId}`
-          : product.imageFileId;
+        // ✅ CORRECT FORMAT: Use backend retrieval endpoint
+        const newImageUrl = `${baseUrl}/api/v1/upload/file/${product.imageFileId}`;
 
         if (product.imageUrl !== newImageUrl) {
           product.imageUrl = newImageUrl;
           await product.save();
           updated++;
+          console.log(`✅ Updated: ${product.name} -> ${newImageUrl}`);
         }
       }
     }
@@ -670,6 +670,11 @@ export const recordProductSale = async (req: Request, res: Response) => {
     return res.status(200).json({
       status: 'success',
       message: `Updated ${updated} product image URLs`,
+      data: {
+        totalProducts: products.length,
+        updated,
+        newUrlFormat: `${baseUrl}/api/v1/upload/file/{fileId}`,
+      },
     });
   } catch (error) {
     const message = error instanceof Error ? error.message : 'Failed to fix image URLs';

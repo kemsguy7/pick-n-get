@@ -4,11 +4,11 @@
 
 ---
 
-## 🚀Quick Start
+## 🚀 Quick Start
 
 ### Prerequisites
 
-- Node.js 18+ and npm
+- Node.js 18+ and  npm
 - MongoDB (local or Atlas)
 - Firebase project
 - Hedera Testnet account

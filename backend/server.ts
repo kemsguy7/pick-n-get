@@ -31,9 +31,48 @@ const PORT = process.env.PORT || 5000;
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
-// Middleware setup
-app.use(cors());
-app.use(helmet());
+// Middleware setup - CORS FIRST
+app.use(
+  cors({
+    origin: function (origin, callback) {
+      if (!origin) return callback(null, true);
+
+      const allowedOrigins = [
+        'http://localhost:3000',
+        'http://localhost:3001',
+        'https://pick-n-get-fe.vercel.app',
+      ];
+
+      // if (origin.match(/^https:\/\/pick-n-get-fe.*\.vercel\.app$/)) {
+      //   return callback(null, true);
+      // }
+
+      if (allowedOrigins.includes(origin)) {
+        callback(null, true);
+      } else {
+        console.error('CORS blocked origin:', origin); //Debug logging
+        callback(new Error('Not allowed by CORS'));
+      }
+    },
+    credentials: true,
+    methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization'],
+    exposedHeaders: ['Content-Type', 'Content-Length', 'Cache-Control'],
+  }),
+);
+
+// THEN helmet
+app.use(
+  helmet({
+    crossOriginResourcePolicy: { policy: 'cross-origin' },
+    crossOriginEmbedderPolicy: false,
+    contentSecurityPolicy: false,
+  }),
+);
+
+app.use(morgan('dev'));
+app.use(express.json());
+app.use(express.urlencoded({ limit: '50mb', extended: true }));
 app.use(morgan('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ limit: '50mb', extended: true }));
