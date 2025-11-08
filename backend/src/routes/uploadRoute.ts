@@ -1,6 +1,6 @@
 import express from 'express';
 import multer from 'multer';
-import { uploadDocument, uploadMultipleDocuments } from '../controllers/uploadController.js';
+import { uploadDocument, uploadMultipleDocuments, getFile } from '../controllers/uploadController.js';
 
 const router = express.Router();
 
@@ -14,7 +14,7 @@ const upload = multer({
   },
   fileFilter: (req, file, cb) => {
     // Allowed file types
-    const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'application/pdf'];
+    const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp', 'application/pdf'];
 
     if (allowedTypes.includes(file.mimetype)) {
       cb(null, true);
@@ -29,5 +29,9 @@ router.post('/document', upload.single('file'), uploadDocument);
 
 // Multiple files upload
 router.post('/documents', upload.array('files', 10), uploadMultipleDocuments);
+
+// ✅ NEW: Retrieve file from Hedera File Service
+// GET /api/v1/upload/file/:fileId
+router.get('/file/:fileId', getFile);
 
 export default router;

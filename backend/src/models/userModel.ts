@@ -5,6 +5,7 @@ export enum UserRole {
   Admin = 'Admin',
   SuperAdmin = 'SuperAdmin',
   Vendor = 'Vendor',
+  Rider = 'Rider',
 }
 
 export enum UserStatus {
