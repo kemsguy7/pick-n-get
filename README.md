@@ -1,429 +1,464 @@
-```markdown
-# EcoCleans - Web3 Recycling & Waste Management Platform
+**Pick-n-Get Web Application for Decentralized Recycling Platform**
 
-**Turning Waste into Wealth Through Blockchain Technology**
+---
 
-EcoCleans Get is a comprehensive Web3-powered recycling and waste management platform built on U2U Network that transforms how individuals and communities manage waste, earn rewards, and support environmental sustainability. By leveraging blockchain technology and smart contracts, we create a transparent, incentive-driven recycling ecosystem where environmental responsibility meets economic opportunity.
-
-## 🎯 Project Overview
-
-EcoCleans Get empowers users to:
-
-- Recycle waste materials (plastic, iron, nylon, bottles, electronics, paper, etc.)
-- Earn cryptocurrency rewards based on waste weight and type
-- Access marketplace for eco-friendly products made from recycled materials
-- Track environmental impact with transparent blockchain records
-- Connect with verified pickup agents for convenient waste collection
-
-Through verified delivery agents, embedded crypto wallets, IPFS document storage, and trackable delivery systems, EcoCleans enables individuals to turn waste into wealth while actively combating pollution and fostering a circular economy.
-
-## 🚀 Key Features
-
-### For Recyclers (Users)
-
-- **Anonymous Registration**: Register with just a wallet connection and basic info
-- **Item Submission**: Upload recyclable items with photos, descriptions, and weight
-- **Instant Rewards**: Receive ECO tokens or stablecoins upon verification
-- **Progress Tracking**: Monitor recycling status from collection to processing
-- **EcoShop Marketplace**: Purchase sustainable products made from recycled materials
-- **Wallet Integration**: MetaMask and WalletConnect support for seamless transactions
-- **Impact Dashboard**: View carbon offset statistics and recycling history
-
-### For Pickup Agents (Riders)
-
-- **Multi-Step Registration**: Complete KYC with document verification via IPFS
-- **Vehicle Management**: Register bikes, cars, vans, or trucks with capacity tracking
-- **Smart Routing**: Receive pickup requests based on location and vehicle type
-- **Earnings Tracking**: Monitor completed deliveries and token earnings
-- **Status Management**: Control availability and manage pickup schedules
-- **Document Security**: All credentials stored securely on IPFS with CIDs on blockchain
-
-### For Vendors/Producers
-
-- **Product Listings**: Showcase eco-friendly products in the marketplace
-- **Inventory Management**: Track stock levels and sales analytics
-- **Order Processing**: Manage customer orders and delivery coordination
-- **Performance Analytics**: View sales trends and customer feedback
-
-### For Administrators
-
-- **Rider Approval System**: Review and approve/reject agent applications
-- **Rate Management**: Set and update recycling rates per material type
-- **User Management**: Monitor platform activity and user accounts
-- **Analytics Dashboard**: Track platform metrics and recycling volumes
-- **Payment Oversight**: Manage contract balance and reward distributions
-
-## 🛠️ Technical Architecture
-
-### Frontend Stack
-
-- Next.js 15.5.2 with React 19 for modern web application
-- TypeScript for type-safe development
-- Tailwind CSS 4.1 for responsive, utility-first styling
-- Lucide React for beautiful iconography
-
-### Blockchain Integration
-
-- U2U Network for smart contract deployment
-- Hedera SDK for wallet interactions and transaction handling
-- Ethers.js 5.7 for blockchain operations
-- Smart Contracts written in Solidity 0.8.28
-
-### Wallet & Authentication
-
-- MetaMask Integration via custom client
-- WalletConnect 2.x for mobile wallet support
-- Multi-wallet Support with unified interface
-- Context-based State Management for wallet connections
-
-### Storage & Data Management
-
-- IPFS (Pinata) for decentralized document storage
-- MongoDB for backend data persistence
-- Firebase Realtime Database for live location tracking
-- Redis for caching and session management
-
-### Backend Services
-
-- Express.js REST API server
-- Node.js runtime environment
-- TypeScript for backend logic
-- Mongoose for MongoDB ODM
-- Socket.io for real-time communications
-
-## 📋 Project Structure
-
-### Frontend (/app)
-```
-
-app/
-├── auth/ # Authentication flows
-│ └── signup/
-│ ├── agent/ # Rider registration (4 steps)
-│ ├── recycler/ # User registration
-│ └── success/ # Registration success
-├── dashboard/ # User dashboard
-├── recycle/ # Recycling flow
-├── shop/ # EcoShop marketplace
-├── tracking/ # Delivery tracking
-├── admin/ # Admin panel
-├── components/ # Reusable UI components
-│ ├── layout/ # Layout components
-│ ├── wallet/ # Wallet connection
-│ ├── recycle/ # Recycling components
-│ └── shop/ # Shop components
-├── services/ # Blockchain services
-│ ├── userService.ts
-│ ├── riderService.ts
-│ ├── recycleService.ts
-│ ├── adminService.ts
-│ └── wallets/ # Wallet integrations
-├── contexts/ # React contexts
-├── apis/ # API integrations
-└── config/ # Configuration files
-
-```
-
-### Backend (/src)
-
-```
-
-src/
-├── controllers/ # Request handlers
-│ └── deliveryController.ts
-├── services/ # Business logic
-│ ├── deliveryService.ts
-│ └── notificationService.ts
-├── routes/ # API routes
-│ └── deliveryRoute.ts
-├── interface/ # TypeScript interfaces
-│ └── deliveryInterface.ts
-├── utils/ # Helper functions
-│ └── riderValidation.ts
-├── middleware/ # Express middleware
-│ └── auth.ts
-├── config/ # Configuration
-│ ├── db.ts
-│ ├── firebase.ts
-│ └── messaging.ts
-└── swagger/ # API documentation
-├── config.ts
-└── swagger.yaml
-
-````
-
-## 🚀 Getting Started
+## 🚀 Quick Start
 
 ### Prerequisites
 
 - Node.js 18+ and npm
-- MongoDB instance (local or Atlas)
-- U2U Network wallet with testnet tokens
-- Pinata account for IPFS
-- Firebase project for real-time features
+- Hedera Testnet wallet (MetaMask or HashPack)
+- Pinata API keys
+- Firebase project
+- **Backend server running** (Required)
+
+### ⚠️ IMPORTANT: Backend Setup Required
+
+**You MUST have the backend running before starting the frontend application.**
+
+```bash
+# Clone and start the backend first
+git clone https://github.com/Dev-JoyA/pick-n-get-be
+cd pick-n-get-be
+# Follow backend setup instructions in that repository
+npm install
+npm start
+```
+
+The backend should be running on `http://localhost:5000` before you proceed with the frontend.
 
 ### Frontend Installation
 
 ```bash
-# Clone the repository
-git clone <repository-url>
-cd hedera-fe
-
-# Install dependencies
+# After backend is running, install frontend dependencies
 npm install
 
 # Create environment file
 cp .env.example .env.local
 
-# Configure environment variables (see below)
-# Edit .env.local with your credentials
-
-# Run development server
+# Start development server
 npm run dev
-
-# Build for production
-npm run build
-
-# Start production server
-npm start
-````
-
-### Backend Installation
-
-```bash
-# Navigate to backend directory
-cd ecocleans-n-get-be
-
-# Install dependencies
-npm install
-
-# Create environment file
-cp .env.example .env
-
-# Configure environment variables (see below)
-# Edit .env with your credentials
-
-# Run development server
-npm run dev
-
-# Build for production
-npm run build
-
-# Start production server
-npm start
 ```
 
-## Environment Configuration
-
-### Frontend (.env.local)
-
-```bash
-# Transak (Fiat to Crypto)
-TRANSAK_API_KEY=your_transak_api_key
-TRANSAK_API_SECRET=your_transak_secret
-
-# Backend API
-NEXT_PUBLIC_BACKEND_API_URL=http://localhost:5000/api/v1
-
-# Blockchain
-NEXT_PUBLIC_HEDERA_NETWORK=testnet
-NEXT_PUBLIC_CONTRACT_ADDRESS=0.0.xxxxxxx
-
-# IPFS (Pinata)
-IPFS_WRITE_API_KEY=your_pinata_api_key
-IPFS_WRITE_API_SECRET=your_pinata_secret
-NEXT_PUBLIC_IPFS_WRITE_JWT=your_pinata_jwt
-NEXT_PUBLIC_GATEWAY_URL=https://gateway.pinata.cloud
-
-# Google Maps (for agent routing)
-NEXT_PUBLIC_GOOGLE_MAPS_API_KEY=your_google_maps_key
-MAP_ID=your_map_id
-MAP_ID_NAME=ecocleans
-```
-
-### Backend (.env)
-
-```bash
-# Server
-PORT=5000
-NODE_ENV=development
-
-# MongoDB
-MONGODB_URI=mongodb://localhost:27017/ecocleans
-
-# Firebase
-DATABASE_URL=https://your-project.firebaseio.com/
-APIKEY=your_firebase_api_key
-AUTHDOMAIN=your-project.firebaseapp.com
-PROJECTID=your-project-id
-STORAGEBUCKET=your-project.appspot.com
-MESSAGINGSENDERID=your_sender_id
-APPID=your_app_id
-FIREBASE_SERVICE_ACCOUNT_KEY=your_service_account_email
-
-# Mapbox (for rider routing)
-MAPBOX_API_KEY=your_mapbox_api_key
-
-# Security
-PRIVATE_KEY=your_encryption_private_key
-PUBLIC_KEY=your_encryption_public_key
-```
-
-## 📱 User Flows
-
-### Recycler Registration & Usage
-
-1. **Connect Wallet** - MetaMask or WalletConnect
-2. **Register Account** - Provide name, address, phone number, optional profile picture
-3. **Submit Recyclables** - Upload item photos, select category, enter weight
-4. **Schedule Pickup** - Choose pickup agent and time
-5. **Track Progress** - Monitor collection and delivery status
-6. **Receive Rewards** - Get ECO tokens deposited to wallet
-7. **Shop or Swap** - Use tokens in EcoShop or swap for other currencies
-
-### Rider Registration & Operations
-
-1. **Connect Wallet** - Secure wallet connection required
-2. **Personal Information** - Enter name, phone, address, country
-3. **Vehicle Details** - Vehicle type, make/model, plate number, capacity
-4. **Document Upload** - Submit to IPFS:
-   - Driver's license
-   - Vehicle registration
-   - Insurance certificate (optional for bikes)
-   - Vehicle photos
-   - Profile photo
-5. **Blockchain Registration** - All document CIDs stored on-chain
-6. **Web2 Sync** - Data synced to backend for admin approval
-7. **Admin Approval** - Pending review before activation
-8. **Accept Pickups** - Start receiving and completing pickup requests
-
-## 🔗 Smart Contract Functions
-
-### User Operations
-
-- `registerUser()` - Register new recycler with profile
-- `recycleItem()` - Submit recyclable item for pickup
-- `payUser()` - Receive rewards after confirmation
-
-### Rider Operations
-
-- `riderApplication()` - Submit rider application with documents
-- `approveRider()` - Admin approves rider (changes status)
-- `banRider()` - Admin bans rider for violations
-- `confirmItem()` - Rider confirms pickup completion
-
-### Admin Operations
-
-- `registerAdmin()` - Add new admin
-- `setRate()` - Update recycling rates per material
-- `fundContract()` - Add funds for reward payments
-- `contractBalance()` - Check available reward pool
-
-## 🔐 Security Features
-
-### Blockchain Security
-
-- All transactions signed with user's private key
-- Smart contract access control for admin functions
-- Rate limiting via nullifiers
-- Immutable audit trail on U2U Network
-
-### Document Security
-
-- All sensitive documents stored on IPFS
-- Only CIDs (content identifiers) stored on-chain
-- Document validation before upload
-- Encrypted transmission of files
-
-### Authentication
-
-- Wallet-based authentication (no passwords)
-- Multi-factor via wallet confirmation
-- Session management with secure tokens
-- Role-based access control (User/Rider/Admin)
-
-## 📊 API Documentation
-
-API documentation is available via Swagger UI when running the backend:
-
-```
-http://localhost:5000/api-docs
-```
-
-### Key Endpoints
-
-#### Rider Management
-
-- `POST /api/v1/riders` - Register new rider
-- `GET /api/v1/riders` - Get all riders (admin)
-- `GET /api/v1/riders/:riderId` - Get rider by ID
-- `GET /api/v1/riders/check/:identifier` - Check registration status
-- `PATCH /api/v1/riders/:riderId/approval` - Approve/reject rider
-
-#### Pickup Operations
-
-- `POST /api/v1/pick-ride/:user/:item` - Request pickup
-- `POST /api/v1/validate-ride/:rider/:pickupId` - Validate ride
-- `POST /api/v1/update-status/:rider/:pickupId` - Update delivery status
-- `GET /api/v1/total-ride/:rider` - Get rider's completed pickups
-
-## 🎨 Design System
-
-### Color Palette
-
-- **Primary**: Green (#10B981) - Sustainability, growth
-- **Secondary**: Blue (#3B82F6) - Trust, technology
-- **Accent**: Yellow (#F59E0B) - Energy, rewards
-- **Neutral**: Gray scale for UI elements
-
-### Typography
-
-- **Headings**: Space Grotesk - Modern, geometric
-- **Body**: Inter - Clean, readable
-
-### Components
-
-- Glass morphism effects on cards
-- Smooth animations and transitions
-- Responsive layouts for all screen sizes
-- Accessibility-first approach
-
-## 🌍 Environmental Impact
-
-Every recyclable item tracked on the platform contributes to:
-
-- **Carbon Offset Tracking** - Calculate CO2 saved
-- **Waste Diverted** - Tons of waste kept from landfills
-- **Resources Conserved** - Energy and materials saved
-- **Community Impact** - Local environmental improvements
-
-## 🤝 Contributing
-
-We welcome contributions! Here's how you can help:
-
-- **Report Bugs** - Submit issues via GitHub
-- **Suggest Features** - Share ideas for improvements
-- **Submit PRs** - Fix bugs or add features
-- **Improve Docs** - Help others understand the platform
-- **Test** - Try new features and provide feedback
-
-## 📄 License
-
-This project is licensed under the MIT License - see LICENSE file for details.
-
-## 🆘 Support & Community
-
-- **Documentation**: Check /docs for detailed guides
-- **GitHub Issues**: Report bugs or request features
-- **Discord**: Join our community (link TBD)
-- **Email**: support@ecocleans.io (for technical support)
+**Access:** `http://localhost:3000`
 
 ---
 
-**Built with sustainability in mind, powered by blockchain, designed for global impact.**
+## ⚙️ Environment Configuration
 
-**EcoCleans - Where waste becomes wealth, and everyone wins. 🌍♻️💚**
+Create `.env.local` with the following:
 
+```bash
+# Backend API (ensure this matches your running backend)
+NEXT_PUBLIC_BACKEND_API_URL=http://localhost:5000/api/v1
+
+# Hedera Network
+NEXT_PUBLIC_HEDERA_NETWORK=testnet
+NEXT_PUBLIC_CONTRACT_ADDRESS=0.0.7162853
+
+
+
+# WalletConnect
+NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID=your_project_id
+
+# Google Maps (Optional)
+NEXT_PUBLIC_GOOGLE_MAPS_API_KEY=your_google_maps_key
+MAP_ID=your_map_id
+
+# Mapbox (Optional)
+NEXT_PUBLIC_MAPBOX_TOKEN=your_mapbox_token
+
+# Firebase
+NEXT_PUBLIC_FIREBASE_API_KEY=your_firebase_key
+NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN=your-project.firebaseapp.com
+NEXT_PUBLIC_FIREBASE_PROJECT_ID=your-project-id
+NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET=your-project.appspot.com
+NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID=123456789
+NEXT_PUBLIC_FIREBASE_APP_ID=your_app_id
+NEXT_PUBLIC_FIREBASE_DATABASE_URL=https://your-project.firebaseio.com
 ```
 
+---
+
+## 📂 Project Structure
+
 ```
+app/
+├── auth/                    # Authentication flows
+│   ├── login/              # Login page
+│   └── signup/
+│       ├── agent/          # Rider registration (4 steps)
+│       │   ├── page.tsx           # Step 1: Connect wallet
+│       │   ├── personal-info/     # Step 2: Personal details
+│       │   ├── vehicle/           # Step 3: Vehicle details
+│       │   └── documents/         # Step 4: Upload documents
+│       ├── recycler/       # Recycler registration
+│       ├── vendor/         # Vendor registration
+│       ├── security/       # Security/verification step
+│       └── success/        # Registration success page
+│
+├── dashboard/              # Recycler dashboard
+├── recycle/                # Recycling submission flow
+├── shop/                   # Marketplace
+│   ├── [id]/              # Product details
+│   └── page.tsx           # Shop listing
+├── tracking/               # Delivery tracking
+├── admin/                  # Admin panel
+│   ├── approvals/         # Rider approvals
+│   └── users/             # User management
+├── vendors/                # Vendor dashboard
+│   └── add-product/       # Product creation
+├── agents/                 # Rider/Agent dashboard
+│
+├── components/             # Reusable components
+│   ├── layout/            # AppLayout, Header, Footer
+│   ├── wallet/            # Wallet connection
+│   ├── recycle/           # Recycling components
+│   ├── shop/              # Shop components
+│   └── ui/                # UI components
+│
+├── services/               # Blockchain services
+│   ├── userService.ts     # User registration
+│   ├── riderService.ts    # Rider registration
+│   ├── recycleService.ts  # Recycling submission
+│   ├── productService.ts  # Marketplace operations
+│   ├── adminService.ts    # Admin functions
+│   └── wallets/           # Wallet integrations
+│       ├── walletInterface.ts
+│       ├── metamaskClient.ts
+│       └── walletConnectClient.tsx
+│
+├── contexts/               # React contexts
+│   ├── AuthContext.tsx    # Authentication state
+│   ├── MetamaskContext.tsx
+│   ├── WalletConnectContext.tsx
+│   └── AgentSignupContext.tsx
+│
+├── apis/                   # API integration
+│   ├── backendApi.ts      # Backend REST calls
+│   ├── hederaApi.ts       # Hedera SDK
+│   ├── ipfsApi.js         # Hedera File Service API
+│   └── paymentApi.ts      # Payment processing
+│
+├── config/                 # Configuration
+│   ├── constants.ts       # App constants
+│   ├── networks.ts        # Network configs
+│   └── type.ts            # TypeScript types
+│
+└── types/                  # Type definitions
+```
+
+---
+
+## 🔑 Key Features & User Roles
+
+### User Role System
+
+**Important Role Rules:**
+
+- **Users must sign up before accessing any dashboard**
+- **A user CANNOT be both a Recycler and an Agent/Rider**
+- **A user CAN be a Vendor AND (Recycler OR Agent)**
+- **Admin access requires blockchain registration**
+
+### Signup Paths
+
+**Recycler:** `/auth/signup/recycler`  
+**Agent/Rider:** `/auth/signup/agent` (4-step process)  
+**Vendor:** `/auth/signup/vendor`
+
+### Admin Access
+
+To access the admin dashboard, you must register as an admin through the smart contract:
+
+1. Visit [HashScan Contract ABI](https://hashscan.io/testnet/contract/0.0.7162853/abi)
+2. Connect your wallet
+3. Use the `registerAdmin` function (function #8):
+   ```solidity
+   function registerAdmin(address _admin)
+   ```
+4. Pass your wallet address as the `_admin` parameter
+5. After successful registration, you can access `/admin` dashboard
+
+Then add your EVM compatible wallet address, private key and Operator ID to the backend .env file
+
+### Wallet Integration
+
+- **MetaMask:** EVM-compatible wallet
+- **WalletConnect:** Mobile wallet support
+- **Unified API:** Single interface for all wallets
+
+---
+
+## 👥 User Flows
+
+### Recycler Registration
+
+**Path:** `/auth/signup/recycler`
+
+1. Connect wallet
+2. Enter personal info (name, address, phone)
+3. Upload profile picture (optional)
+4. Submit to blockchain
+5. Save to backend
+6. Access dashboard at `/dashboard`
+
+**After Signup:** Users can submit recycling items, track pickups, and view earnings.
+
+---
+
+### Agent/Rider Registration (4 Steps)
+
+**Path:** `/auth/signup/agent`
+
+**Step 1 - Connect Wallet** (`/auth/signup/agent`)
+
+- Connect MetaMask or WalletConnect
+
+**Step 2 - Personal Info** (`/auth/signup/agent/personal-info`)
+
+- Name, phone number
+- Home address
+- Country
+
+**Step 3 - Vehicle Details** (`/auth/signup/agent/vehicle`)
+
+- Vehicle type (Bike, Car, Truck, Van)
+- Vehicle make/model
+- License plate number
+- Capacity (kg)
+
+**Step 4 - Documents** (`/auth/signup/agent/documents`)
+
+- Upload driver's license
+- Vehicle registration
+- Insurance documents
+- Vehicle photo
+- Profile picture
+
+**After Signup:** Application goes to admin for approval. Once approved, access dashboard at `/agents`.
+
+---
+
+### Vendor Registration
+
+**Path:** `/auth/signup/vendor`
+
+1. Connect wallet
+2. Enter business details
+3. Upload business documents (optional)
+4. Submit to blockchain and backend
+5. Access vendor dashboard at `/vendors`
+
+**After Signup:** Vendors can list products, manage inventory, and process orders.
+
+---
+
+### Vendor Product Listing
+
+**Path:** `/vendors/add-product`
+
+1. Connect wallet
+2. Fill product details (name, description, category)
+3. Upload product image to Hedera File Service
+4. Set price (USD → auto-converted to HBAR)
+5. Set quantity
+6. Submit to blockchain
+
+---
+
+### Recycling Submission Flow
+
+**Path:** `/recycle`
+
+**Step 1 - Select Category**
+
+- Choose material type (Plastic, Metal, Glass, Paper, Electronics, etc.)
+
+**Step 2 - Item Details**
+
+- Weight (kg)
+- Description
+- Upload photos
+
+**Step 3 - Pickup Schedule**
+
+- Pickup address
+- Preferred date and time
+- Select available rider
+
+**Step 4 - Confirmation**
+
+- Review all details
+- Submit to blockchain
+- Rider receives notification
+
+---
+
+## 🛠️ Development
+
+### Available Scripts
+
+```bash
+# Development
+npm run dev              # Start dev server
+npm run dev:turbo        # Start with Turbopack
+
+# Production
+npm run build            # Build for production
+npm start                # Start production server
+
+# Code Quality
+npm run lint             # Run ESLint
+npm run lint:fix         # Fix linting issues
+
+# Cleanup
+npm run clean            # Remove build artifacts
+npm run restart          # Clean + reinstall + dev
+```
+
+### Code Style
+
+- **Linting:** ESLint + Prettier
+- **TypeScript:** Strict mode enabled
+- **Formatting:** Prettier with Tailwind plugin
+
+---
+
+## 🔐 Security Best Practices
+
+### Wallet Security
+
+- Never store private keys in frontend
+- Always verify transaction details before signing
+- Use hardware wallets for large amounts
+- Double-check contract addresses
+
+### API Security
+
+- HTTPS only for production
+- Rate limiting on sensitive endpoints
+- Input validation before submission
+- Sanitize user uploads
+
+### File Uploads
+
+- Validate file types and sizes
+- Scan uploads before storing
+- Use Hedera file service for immutable storage
+- Maximum file size: 10MB recommended
+
+---
+
+## 🐛 Troubleshooting
+
+### Common Issues
+
+**Backend connection fails:**
+
+```bash
+# Ensure backend is running on correct port
+# Check NEXT_PUBLIC_BACKEND_API_URL in .env.local
+# Verify backend is accessible at http://localhost:5000
+```
+
+**Wallet won't connect:**
+
+```bash
+# Ensure correct network in MetaMask
+MetaMask → Settings → Networks → Add Network
+Name: Hedera Testnet
+RPC: https://testnet.hashio.io/api
+Chain ID: 296
+Currency: HBAR
+```
+
+**Cannot access dashboard:**
+
+- Ensure you've completed signup process
+- Check that wallet is connected
+- Verify role assignment in contract
+- For admin: Ensure `registerAdmin` was called on contract
+
+**Build errors:**
+
+```bash
+# Clear cache and rebuild
+rm -rf .next node_modules
+npm install
+npm run build
+```
+
+**TypeScript errors:**
+
+```bash
+# Check TypeScript version
+npx tsc --version
+
+# Regenerate types
+npm run type-check
+```
+
+**Role conflicts:**
+
+- A user cannot be both Recycler and Agent
+- To switch roles, you must use a different wallet address
+- Admin role must be assigned via contract, not through signup
+
+---
+
+## 📦 Dependencies
+
+### Core
+
+- Next.js 15.5.2
+- React 19
+- TypeScript 5
+
+### Blockchain
+
+- @hashgraph/sdk 2.73.1
+- @hashgraph/hedera-wallet-connect 1.5.1
+- ethers 5.7.2
+
+### UI
+
+- Tailwind CSS 4.1.12
+- lucide-react 0.542.0
+
+### Storage
+
+- pinata 2.5.0
+- firebase 12.3.0
+
+### Utilities
+
+- dotenv 17.2.2
+- zustand 5.0.8
+
+---
+
+## 🔗 Important Links
+
+- **Backend Repository:** [https://github.com/Dev-JoyA/pick-n-get-be](https://github.com/Dev-JoyA/pick-n-get-be)
+- **Smart Contract:** [0.0.7162853](https://hashscan.io/testnet/contract/0.0.7162853)
+- **Contract ABI:** [https://hashscan.io/testnet/contract/0.0.7162853/abi](https://hashscan.io/testnet/contract/0.0.7162853/abi)
+- **Hedera Testnet:** [https://portal.hedera.com](https://portal.hedera.com)
+
+---
+
+## 📄 License
+
+UNLICENSED — Research and hackathon purposes only.
+
+---
+
+## 📞 Support
+
+- **GitHub Issues:** [Report bugs](https://github.com/kemsguy7/pick-n-get-fe/issues)
+- **Email:** support@pick-n-get.io
+- **Documentation:** See project wiki for detailed guides
+
+---
+
+**Built with Next.js 15 + Hedera Hashgraph**

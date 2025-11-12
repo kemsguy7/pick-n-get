@@ -105,7 +105,7 @@ export const HowTO: React.FC = () => {
         {/* Header */}
         <div className="mb-16 text-center">
           <h1 className="font-space-grotesk description-text mb-3 text-3xl font-semibold text-balance md:text-5xl">
-            How EcoCleans Works
+            How Pick-n-Get Works
           </h1>
           <p className="font-inter secondary-text mx-auto leading-relaxed font-light text-balance">
             Simple steps to start earning your recyclable waste while making a positive

@@ -1,10 +1,9 @@
 'use client';
 
-import { useState, useContext, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { Check, Loader2, AlertCircle, ExternalLink } from 'lucide-react';
 import type { RecycleFormData } from '../../recycle/page';
-import { MetamaskContext } from '../../contexts/MetamaskContext';
-import { WalletConnectContext } from '../../contexts/WalletConnectContext';
+import { useAuth } from '../../contexts/AuthContext';
 import { useWalletInterface } from '../../services/wallets/useWalletInterface';
 import { recycleItem, RecycleItemData } from '../../services/recycleService';
 import { WalletInterface } from '../../services/wallets/walletInterface';
@@ -36,40 +35,58 @@ export default function Confirmation({ formData, onReset }: ConfirmationProps) {
   const [riderName, setRiderName] = useState<string>('');
   const [loadingMessage, setLoadingMessage] = useState<string>('');
 
-  // Get wallet contexts
-  const metamaskCtx = useContext(MetamaskContext);
-  const walletConnectCtx = useContext(WalletConnectContext);
+  // ✅ Get authenticated user data
+  const { user, isAuthenticated } = useAuth();
   const { accountId, walletInterface } = useWalletInterface();
 
-  const isConnected = !!(accountId && walletInterface);
-  console.log(isSubmitting);
+  const isConnected = !!(accountId && walletInterface && isAuthenticated);
 
   const calculateEarnings = () => {
     if (!formData.category || !formData.weight) return 0;
     return Number.parseFloat(formData.weight) * formData.category.rate;
   };
+  console.log(isSubmitting);
 
   const estimatedEarnings = calculateEarnings();
 
   // Auto-submit on component mount
   useEffect(() => {
-    if (isConnected && submitStatus === 'pending') {
+    if (isConnected && user && submitStatus === 'pending') {
+      console.log('🔍 DEBUG: Starting auto-submit with user:', user.userData?.name);
+      console.log('🔍 DEBUG: FormData at confirmation:', formData);
+      console.log('🔍 DEBUG: Selected Rider ID:', formData.selectedRiderId);
+
       handleFullSubmission();
     } else if (!isConnected && submitStatus === 'pending') {
-      setError('Wallet not connected');
+      setError('Wallet not connected or user not authenticated');
       setSubmitStatus('error');
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isConnected, submitStatus]);
+    } // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isConnected, user, submitStatus]);
 
   /**
-   * Full submission flow:
-   * 1. Submit to blockchain (recycleItem)
-   * 2. Create pickup in database with rider assignment
+   * Full submission flow with real user data
    */
   const handleFullSubmission = async () => {
-    if (!isConnected || !formData.category || !formData.weight) {
+    if (!isConnected || !user || !formData.category || !formData.weight) {
       setError('Missing required data for submission');
+      setSubmitStatus('error');
+      return;
+    }
+
+    // ✅ Validate user data exists
+    if (!user.userData?.userId) {
+      setError('User data not found. Please reconnect your wallet.');
+      setSubmitStatus('error');
+      return;
+    }
+
+    // ✅ Early validation of rider selection
+    if (!formData.selectedRiderId || !formData.selectedDriver) {
+      console.error('❌ Missing rider selection data:', {
+        selectedRiderId: formData.selectedRiderId,
+        selectedDriver: formData.selectedDriver,
+      });
+      setError('No rider selected. Please go back and select a rider for pickup.');
       setSubmitStatus('error');
       return;
     }
@@ -105,26 +122,19 @@ export default function Confirmation({ formData, onReset }: ConfirmationProps) {
       setSubmitStatus('pickup');
       setLoadingMessage('Creating pickup request...');
 
-      // Get user data from wallet context
-      // const userId = metamaskCtx.userBlockchainId || walletConnectCtx.userBlockchainId || 1;
-      // const userName = metamaskCtx.userName || walletConnectCtx.userName || 'User';
-      // const userPhone = metamaskCtx.userPhone || '+234000000000';
+      // ✅ Use real user data from AuthContext
+      const userId = user.userData.userId;
+      const userName = user.userData.name || 'User';
 
-      console.log('🔍 DEBUG: FormData in confirmation:', formData);
-      console.log('🔍 DEBUG: Selected Rider ID from formData:', formData.selectedRiderId);
+      // TODO: Add phoneNumber to user data or fetch from backend
+      // For now, we'll need to get this from user profile
+      const userPhone = '+2341234567890'; // Placeholder - should come from user profile
 
-      const userId = 1; // TODO: Get from user context after login
-      const userName = 'Test User';
-      const userPhone = '+2341234567890';
-
-      // Get selected rider ID from formData (it's stored during rider selection)
       const selectedRiderId = formData.selectedRiderId;
 
-      // Validate riderId exists and is a number
       if (!selectedRiderId || typeof selectedRiderId !== 'number') {
-        console.error('❌ Invalid rider ID:', selectedRiderId);
-        console.error('❌ Full formData:', formData);
-        throw new Error('No rider selected. Please go back and select a rider.');
+        console.error('❌ Invalid rider ID at pickup creation:', selectedRiderId);
+        throw new Error('Invalid rider selection. Please go back and select a rider.');
       }
 
       const pickupPayload = {
@@ -133,7 +143,7 @@ export default function Confirmation({ formData, onReset }: ConfirmationProps) {
         customerName: userName,
         customerPhoneNumber: userPhone,
         pickupAddress: formData.address,
-        pickupCoordinates: formData.pickupCoordinates, // ✅ Add this
+        pickupCoordinates: formData.pickupCoordinates,
         itemCategory: formData.category.id,
         itemWeight: parseFloat(formData.weight),
         itemDescription: formData.description || '',
@@ -142,9 +152,7 @@ export default function Confirmation({ formData, onReset }: ConfirmationProps) {
         riderId: selectedRiderId,
       };
 
-      console.log('🔍 DEBUG: Final pickup payload:', pickupPayload);
-      console.log('🔍 DEBUG: riderId type:', typeof pickupPayload.riderId);
-      console.log('🔍 DEBUG: riderId value:', pickupPayload.riderId);
+      console.log('🔍 DEBUG: Final pickup payload with real user:', pickupPayload);
 
       const pickupResponse = await fetch(`${baseUrl}/pickups/create`, {
         method: 'POST',
@@ -160,20 +168,27 @@ export default function Confirmation({ formData, onReset }: ConfirmationProps) {
       console.log('🔍 DEBUG: Pickup response data:', pickupData);
 
       if (!pickupResponse.ok) {
-        throw new Error(pickupData.message || 'Failed to create pickup request');
+        let errorMessage = pickupData.message || 'Failed to create pickup request';
+
+        if (pickupData.received) {
+          console.error('❌ Server received payload:', pickupData.received);
+          errorMessage += '\n\nPlease check that you selected a rider properly.';
+        }
+
+        throw new Error(errorMessage);
       }
 
       // Store pickup data
-      setTrackingId(pickupData.data.pickupId);
-      setRiderName(pickupData.data.riderName);
+      setTrackingId(pickupData.data.trackingId || pickupData.data.pickupId);
+      setRiderName(pickupData.data.riderName || formData.selectedDriver || 'Assigned Rider');
 
-      console.log('✅ Pickup created successfully:', pickupData.data.pickupId);
+      console.log('✅ Pickup created successfully:', trackingId);
 
       // ==================== SUCCESS ====================
       setSubmitStatus('success');
       setLoadingMessage('');
     } catch (err) {
-      console.error('Submission error:', err);
+      console.error('❌ Submission error:', err);
       const errorMessage = err instanceof Error ? err.message : 'Unknown error occurred';
       setLoadingMessage('');
       setError(errorMessage);
@@ -184,17 +199,6 @@ export default function Confirmation({ formData, onReset }: ConfirmationProps) {
       }
     }
   };
-
-  const getWalletStatus = () => {
-    if (metamaskCtx.metamaskAccountAddress) {
-      return { type: 'MetaMask', address: metamaskCtx.metamaskAccountAddress };
-    } else if (walletConnectCtx.accountId) {
-      return { type: 'WalletConnect', address: walletConnectCtx.accountId };
-    }
-    return { type: 'None', address: '' };
-  };
-
-  const walletStatus = getWalletStatus();
 
   // ==================== LOADING STATES ====================
   if (submitStatus === 'pending' || submitStatus === 'blockchain' || submitStatus === 'pickup') {
@@ -241,6 +245,15 @@ export default function Confirmation({ formData, onReset }: ConfirmationProps) {
                 <span className="text-gray-300">Rider assignment</span>
               </div>
             </div>
+
+            {/* ✅ User info during loading */}
+            {user?.userData && (
+              <div className="mt-4 rounded bg-slate-700 p-2 text-xs text-gray-400">
+                <div>User: {user.userData.name}</div>
+                <div>User ID: {user.userData.userId}</div>
+                <div>Role: {user.primaryRole}</div>
+              </div>
+            )}
           </div>
         </div>
       </div>
@@ -263,7 +276,7 @@ export default function Confirmation({ formData, onReset }: ConfirmationProps) {
 
             {/* Error Details */}
             <div className="mb-6 rounded-lg border border-red-500/30 bg-red-500/10 p-4">
-              <p className="font-inter text-sm text-red-400">{error}</p>
+              <p className="font-inter text-sm whitespace-pre-line text-red-400">{error}</p>
             </div>
           </div>
 
@@ -338,6 +351,10 @@ export default function Confirmation({ formData, onReset }: ConfirmationProps) {
               <span className="font-mono font-bold text-green-600">{trackingId}</span>
             </div>
             <div className="flex justify-between">
+              <span className="text-gray-600">User:</span>
+              <span className="font-medium text-gray-800">{user?.userData?.name || 'User'}</span>
+            </div>
+            <div className="flex justify-between">
               <span className="text-gray-600">Category:</span>
               <span className="font-medium text-gray-800">{formData.category?.name}</span>
             </div>
@@ -360,8 +377,10 @@ export default function Confirmation({ formData, onReset }: ConfirmationProps) {
               </div>
             )}
             <div className="flex justify-between">
-              <span className="text-gray-600">Submitted via:</span>
-              <span className="font-medium text-gray-800">{walletStatus.type}</span>
+              <span className="text-gray-600">Wallet:</span>
+              <span className="font-medium text-gray-800">
+                {user?.walletAddress?.slice(0, 10)}...
+              </span>
             </div>
             <div className="flex justify-between">
               <span className="text-gray-600">Status:</span>
@@ -388,7 +407,7 @@ export default function Confirmation({ formData, onReset }: ConfirmationProps) {
           </button>
           <button
             onClick={onReset}
-            className="font-inter flex items-center justify-center rounded-lg bg-gradient-to-r from-yellow-400 to-green-500 px-6 py-3 font-semibold text-black transition-all hover:from-yellow-500 hover:to-green-600"
+            className="font-inter bg-linear-gradient-to-r flex items-center justify-center rounded-lg from-yellow-400 to-green-500 px-6 py-3 font-semibold text-black transition-all hover:from-yellow-500 hover:to-green-600"
           >
             <svg className="mr-2 h-4 w-4" fill="currentColor" viewBox="0 0 20 20">
               <path

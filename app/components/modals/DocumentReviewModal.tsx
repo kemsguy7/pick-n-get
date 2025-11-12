@@ -37,7 +37,8 @@ interface DocumentInfo {
   label: string;
 }
 
-const HEDERA_FILE_BASE_URL = 'https://testnet.mirrornode.hedera.com/api/v1/files';
+// ✅ FIXED: Use backend retrieval endpoint instead of direct Hedera access
+const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_API_URL || 'http://localhost:5000/api/v1';
 
 export default function DocumentReviewModal({ isOpen, onClose, riderData }: DocumentViewerProps) {
   const [selectedDocument, setSelectedDocument] = useState<DocumentInfo | null>(null);
@@ -56,41 +57,42 @@ export default function DocumentReviewModal({ isOpen, onClose, riderData }: Docu
     }
   }, [isOpen]);
 
-  // ✅ FIXED: Prepare document list with proper typing
+  // ✅ Prepare document list with proper typing
   const documents: DocumentInfo[] = [
     {
       name: 'profileImage',
       fileId: riderData.documents?.profileImage || '',
-      type: 'image' as const, // Use 'as const' to preserve literal type
+      type: 'image' as const,
       label: 'Profile Photo',
     },
     {
       name: 'driversLicense',
       fileId: riderData.documents?.driversLicense || '',
-      type: 'document' as const, //Use 'as const' to preserve literal type
+      type: 'document' as const,
       label: "Driver's License",
     },
     {
       name: 'vehicleRegistration',
       fileId: riderData.documents?.vehicleRegistration || '',
-      type: 'document' as const, // ✅ Use 'as const' to preserve literal type
+      type: 'document' as const,
       label: 'Vehicle Registration',
     },
     {
       name: 'insuranceCertificate',
       fileId: riderData.documents?.insuranceCertificate || '',
-      type: 'document' as const, // ✅ Use 'as const' to preserve literal type
+      type: 'document' as const,
       label: 'Insurance Certificate',
     },
     {
       name: 'vehiclePhotos',
       fileId: riderData.documents?.vehiclePhotos || '',
-      type: 'image' as const, // ✅ Use 'as const' to preserve literal type
+      type: 'image' as const,
       label: 'Vehicle Photos',
     },
   ].filter((doc) => doc.fileId && doc.fileId.trim() !== '');
 
   const handleDocumentSelect = (document: DocumentInfo) => {
+    console.log(`📄 Selecting document: ${document.label} (${document.fileId})`);
     setSelectedDocument(document);
     setImageError(null);
     setImageLoading(true);
@@ -99,10 +101,12 @@ export default function DocumentReviewModal({ isOpen, onClose, riderData }: Docu
   };
 
   const handleImageLoad = () => {
+    console.log(`✅ Document loaded successfully`);
     setImageLoading(false);
   };
 
   const handleImageError = () => {
+    console.error(`❌ Failed to load document: ${selectedDocument?.fileId}`);
     setImageLoading(false);
     setImageError('Failed to load document. The file may be corrupted or inaccessible.');
   };
@@ -119,31 +123,27 @@ export default function DocumentReviewModal({ isOpen, onClose, riderData }: Docu
     setRotation((prev) => (prev + 90) % 360);
   };
 
+  // ✅ FIXED: Download using backend endpoint
   const handleDownload = async (document: DocumentInfo) => {
     try {
-      const response = await fetch(`${HEDERA_FILE_BASE_URL}/${document.fileId}`);
+      console.log(`💾 Downloading document: ${document.fileId}`);
 
-      if (!response.ok) {
-        throw new Error('Failed to download file');
-      }
+      // Use backend retrieval endpoint
+      const url = `${BACKEND_URL}/upload/file/${document.fileId}`;
 
-      const blob = await response.blob();
-      const url = window.URL.createObjectURL(blob);
-      const link = window.document.createElement('a');
-      link.href = url;
-      link.download = `${riderData.name}_${document.name}.${blob.type.split('/')[1] || 'jpg'}`;
-      window.document.body.appendChild(link);
-      link.click();
-      window.document.body.removeChild(link);
-      window.URL.revokeObjectURL(url);
+      // Open in new tab for download
+      window.open(url, '_blank');
     } catch (error) {
       console.error('Download failed:', error);
       alert('Failed to download file. Please try again.');
     }
   };
 
-  const getHederaFileUrl = (fileId: string): string => {
-    return `${HEDERA_FILE_BASE_URL}/${fileId}`;
+  // ✅ FIXED: Get file URL using backend endpoint
+  const getFileUrl = (fileId: string): string => {
+    const url = `${BACKEND_URL}/upload/file/${fileId}`;
+    console.log(`🔗 Generated file URL: ${url}`);
+    return url;
   };
 
   if (!isOpen) return null;
@@ -292,6 +292,9 @@ export default function DocumentReviewModal({ isOpen, onClose, riderData }: Docu
                         <AlertCircle className="mx-auto mb-3 h-12 w-12 text-red-500" />
                         <p className="mb-2 font-medium text-red-600">Failed to load document</p>
                         <p className="text-sm text-gray-500">{imageError}</p>
+                        <p className="mt-2 text-xs text-gray-400">
+                          File ID: {selectedDocument.fileId}
+                        </p>
                         <button
                           onClick={() => handleDocumentSelect(selectedDocument)}
                           className="mt-4 rounded bg-blue-500 px-4 py-2 text-white transition-colors hover:bg-blue-600"
@@ -303,7 +306,7 @@ export default function DocumentReviewModal({ isOpen, onClose, riderData }: Docu
 
                     {!imageLoading && !imageError && (
                       <img
-                        src={getHederaFileUrl(selectedDocument.fileId)}
+                        src={getFileUrl(selectedDocument.fileId)}
                         alt={selectedDocument.label}
                         onLoad={handleImageLoad}
                         onError={handleImageError}
