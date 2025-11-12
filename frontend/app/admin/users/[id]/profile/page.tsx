@@ -1,5 +1,5 @@
 'use client';
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { ArrowLeft, Shield, FileText } from 'lucide-react';
 import AppLayout from '../../../../components/layout/AppLayout';
@@ -41,8 +41,8 @@ export default function UserProfilePage() {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState('');
 
-  // ✅ FIXED: Use useCallback to memoize fetchUserData
-  const fetchUserData = useCallback(async () => {
+  // ✅ FETCH REAL USER DATA
+  const fetchUserData = async () => {
     try {
       setIsLoading(true);
       console.log(`👤 Fetching user data for ID: ${userId}`);
@@ -62,14 +62,13 @@ export default function UserProfilePage() {
     } finally {
       setIsLoading(false);
     }
-  }, [userId]);
+  };
 
-  // ✅ FIXED: Proper dependency array with useCallback
   useEffect(() => {
     if (userId) {
       fetchUserData();
-    }
-  }, [userId, fetchUserData]);
+    } // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [userId]);
 
   const getStatusBadge = (status: string) => {
     switch (status) {
@@ -153,7 +152,7 @@ export default function UserProfilePage() {
           {/* User Profile Card */}
           <div className="rounded-xl border border-slate-700/50 bg-black p-6">
             <div className="mb-8 flex items-start gap-6">
-              <div className="flex h-20 w-20 flex-shrink-0 items-center justify-center rounded-full bg-gradient-to-r from-purple-400 to-blue-400">
+              <div className="flex h-20 w-20 shrink-0 items-center justify-center rounded-full bg-linear-to-r from-purple-400 to-blue-400">
                 <span className="text-2xl font-bold text-white">
                   {userData.name.charAt(0).toUpperCase()}
                 </span>

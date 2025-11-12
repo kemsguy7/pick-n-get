@@ -185,7 +185,7 @@ function AdminDashboardContent() {
       setIsLoadingPending(true);
       console.log('🔍 Fetching pending riders...');
 
-      const response = await fetch(`${BACKEND_URL}/admin/riders/pending`);
+      const response = await fetch(`${BACKEND_URL}/admin/pending`);
       const data = await response.json();
 
       if (data.status === 'success') {
@@ -1017,10 +1017,10 @@ function AdminDashboardContent() {
           <div className="mt-4 flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
             <div>
               <h1 className="text-green-gradient font-space-grotesk mb-2 bg-transparent bg-clip-text text-3xl font-bold md:text-4xl lg:text-5xl">
-                Welcome, Kemsguy
+                Welcome, Admin
               </h1>
               <p className="secondary-text font-inter text-lg">
-                Manage and monitor the EcoCleans platform
+                Manage and monitor the Pick-n-Get platform
               </p>
             </div>
             <div className="flex gap-3">

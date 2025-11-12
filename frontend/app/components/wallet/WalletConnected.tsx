@@ -119,7 +119,7 @@ export default function WalletConnected({ onDisconnect }: WalletConnectedProps) 
               <div className="font-inter text-primary flex items-center justify-between">
                 <div>
                   <p className="font-medium">Receive Tokens</p>
-                  <p className="text-sm">EcoCleans Utility Token</p>
+                  <p className="text-sm">Pick-n-Get Utility Token</p>
                 </div>
                 <div className="text-primary text-right">
                   <p className="text-lg font-medium">

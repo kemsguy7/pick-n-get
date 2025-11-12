@@ -5,6 +5,7 @@ import { MapPin, Phone, AlertCircle, Check } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useAgentSignup } from '../../../../contexts/AgentSignupContext';
 import AppLayout from '../../../../components/layout/AppLayout';
+import Image from 'next/image';
 
 export default function AgentSignupStep2(): React.JSX.Element {
   const router = useRouter();
@@ -132,10 +133,10 @@ export default function AgentSignupStep2(): React.JSX.Element {
         <div className="w-full max-w-md">
           {/* Logo */}
           <div className="mb-8 text-center">
-            <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-2xl bg-green-500">
-              <div className="h-8 w-8 rounded-lg bg-white"></div>
+            <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-2xl">
+              <Image src="/PickLogo.png" width={200} height={200} alt="Pick-n-Get Logo" />
             </div>
-            <h1 className="font-space-grotesk text-2xl font-bold text-white">Join EcoCleans</h1>
+            <h1 className="font-space-grotesk text-2xl font-bold text-white">Join Pick-n-Get</h1>
             <p className="font-inter text-gray-300">Start your sustainable journey today</p>
           </div>
 
@@ -206,7 +207,7 @@ export default function AgentSignupStep2(): React.JSX.Element {
                       value={signupData.personalInfo.firstName}
                       onChange={handleInputChange}
                       placeholder="John"
-                      className={`font-inter w-full rounded-lg border px-3 py-2.5 focus:border-transparent focus:ring-2 focus:ring-green-500 ${
+                      className={`font-inter w-full rounded-lg border px-3 py-2.5 text-black focus:border-transparent focus:ring-2 focus:ring-green-500 ${
                         getFieldError('firstName') ? 'border-red-300 bg-red-50' : 'border-gray-300'
                       }`}
                     />
@@ -224,7 +225,7 @@ export default function AgentSignupStep2(): React.JSX.Element {
                       value={signupData.personalInfo.lastName}
                       onChange={handleInputChange}
                       placeholder="Doe"
-                      className={`font-inter w-full rounded-lg border px-3 py-2.5 focus:border-transparent focus:ring-2 focus:ring-green-500 ${
+                      className={`font-inter w-full rounded-lg border px-3 py-2.5 text-black focus:border-transparent focus:ring-2 focus:ring-green-500 ${
                         getFieldError('lastName') ? 'border-red-300 bg-red-50' : 'border-gray-300'
                       }`}
                     />
@@ -294,7 +295,7 @@ export default function AgentSignupStep2(): React.JSX.Element {
 
                 {/* Country */}
                 <div>
-                  <label className="font-inter mb-1 block text-sm font-medium text-gray-700">
+                  <label className="font-inter mb-1 block text-sm font-medium text-black">
                     Country <span className="text-red-500">*</span>
                   </label>
                   <div className="relative">
@@ -302,18 +303,18 @@ export default function AgentSignupStep2(): React.JSX.Element {
                       name="country"
                       value={signupData.personalInfo.country}
                       onChange={handleInputChange}
-                      className="font-inter w-full appearance-none rounded-lg border border-gray-300 bg-white px-3 py-2.5 focus:border-transparent focus:ring-2 focus:ring-green-500"
+                      className="font-inter w-full appearance-none rounded-lg border border-gray-300 bg-white px-3 py-2.5 text-black focus:border-transparent focus:ring-2 focus:ring-green-500"
                     >
-                      <option value="Ghana">Ghana</option>
+                      {/* <option value="Ghana">Ghana</option> */}
                       <option value="Nigeria">Nigeria</option>
-                      <option value="Kenya">Kenya</option>
+                      {/* <option value="Kenya">Kenya</option>
                       <option value="South Africa">South Africa</option>
                       <option value="Uganda">Uganda</option>
-                      <option value="Tanzania">Tanzania</option>
+                      <option value="Tanzania">Tanzania</option> */}
                     </select>
                     <div className="pointer-events-none absolute top-1/2 right-3 -translate-y-1/2 transform">
                       <svg
-                        className="h-4 w-4 text-gray-400"
+                        className="h-4 w-4 text-black"
                         fill="none"
                         stroke="currentColor"
                         viewBox="0 0 24 24"

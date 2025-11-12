@@ -17,12 +17,20 @@ export interface RiderData {
   riderStatus: string;
 }
 
+export interface VendorData {
+  vendorId: number;
+  registrationId: number;
+  approvalStatus: string;
+  businessName: string;
+}
+
 export interface AuthUser {
   walletAddress: string;
   roles: string[];
   primaryRole: string;
   userData?: UserData;
   riderData?: RiderData;
+  vendorData?: VendorData; // NEW: Vendor data
 }
 
 interface AuthContextType {
@@ -80,6 +88,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           primaryRole: response.data.primaryRole,
           userData: response.data.userData,
           riderData: response.data.riderData,
+          vendorData: response.data.vendorData,
         };
 
         setUser(authUser);
@@ -112,6 +121,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         primaryRole: response.data.primaryRole,
         userData: response.data.userData,
         riderData: response.data.riderData,
+        vendorData: response.data.vendorData, // NEW: Include vendor data
       };
 
       setUser(authUser);
@@ -170,6 +180,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       SuperAdmin: '/admin',
       Admin: '/admin',
       Rider: '/agents',
+      Vendor: '/vendors', // NEW: Vendor route
       Recycler: '/dashboard',
       Guest: '/',
     };

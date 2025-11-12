@@ -68,7 +68,7 @@ export default function SignupMainPage(): React.JSX.Element {
             <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-2xl bg-green-500">
               <div className="h-8 w-8 rounded-lg bg-white"></div>
             </div>
-            <h1 className="font-space-grotesk text-2xl font-bold text-white">Join EcoCleans</h1>
+            <h1 className="font-space-grotesk text-2xl font-bold text-white">Join Pick-n-Get</h1>
             <p className="font-inter text-gray-300">Start your sustainable journey today</p>
           </div>
 
@@ -109,7 +109,7 @@ export default function SignupMainPage(): React.JSX.Element {
                   >
                     <div className="flex items-center gap-3">
                       {role.selected && (
-                        <div className="flex h-6 w-6 flex-shrink-0 items-center justify-center rounded-full bg-green-500">
+                        <div className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-green-500">
                           <Check className="h-4 w-4 text-white" />
                         </div>
                       )}

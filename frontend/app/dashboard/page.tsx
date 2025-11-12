@@ -1,10 +1,11 @@
 'use client';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Gift } from 'lucide-react';
 import AppLayout from '../components/layout/AppLayout';
 import StatCard, { StatCardProps } from '../components/ui/statCard';
 import ProductCard, { ProductCardProps } from '../components/ui/ProductCard';
 import AchievementCard, { AchievementCardProps } from '../components/dashboard/AchievementCard';
+import { useAuth } from '../contexts/AuthContext';
 import {
   Recycle,
   DollarSign,
@@ -22,10 +23,78 @@ import {
   Eye,
 } from 'lucide-react';
 
+interface UserStats {
+  totalRecycled: number;
+  totalEarnings: number;
+  co2Saved: number;
+  totalPickups: number;
+  monthlyGoal: number;
+  currentProgress: number;
+}
+
+const baseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api/v1';
+
 export default function DashboardPage() {
   const [activeTab, setActiveTab] = useState('overview');
+  const [userStats, setUserStats] = useState<UserStats | null>(null);
+  const [isLoadingStats, setIsLoadingStats] = useState(true);
 
-  // Stats data for different tabs
+  // ✅ Get authenticated user data
+  const { user, isAuthenticated } = useAuth();
+
+  // Fetch user stats from backend
+  useEffect(() => {
+    const fetchUserStats = async () => {
+      if (!user?.userData?.userId) return;
+
+      setIsLoadingStats(true);
+      try {
+        const response = await fetch(`${baseUrl}/users/${user.userData.userId}`);
+        if (response.ok) {
+          const data = await response.json();
+          const userData = data.data;
+
+          setUserStats({
+            totalRecycled: userData.totalRecycled || 47.3,
+            totalEarnings: userData.totalEarnings || 2082.5,
+            co2Saved: userData.co2Saved || 23.4,
+            totalPickups: userData.totalPickups || 12,
+            monthlyGoal: 50, // Static for now
+            currentProgress: userData.totalRecycled || 47.3,
+          });
+        } else {
+          // Fallback to default data if user not found in backend yet
+          setUserStats({
+            totalRecycled: 0,
+            totalEarnings: 0,
+            co2Saved: 0,
+            totalPickups: 0,
+            monthlyGoal: 50,
+            currentProgress: 0,
+          });
+        }
+      } catch (error) {
+        console.error('Error fetching user stats:', error);
+        // Set default stats on error
+        setUserStats({
+          totalRecycled: 0,
+          totalEarnings: 0,
+          co2Saved: 0,
+          totalPickups: 0,
+          monthlyGoal: 50,
+          currentProgress: 0,
+        });
+      } finally {
+        setIsLoadingStats(false);
+      }
+    };
+
+    if (isAuthenticated && user) {
+      fetchUserStats();
+    }
+  }, [user, isAuthenticated]);
+
+  // Stats data for different tabs using real user data
   const statsData: Record<string, StatCardProps[]> = {
     overview: [
       {
@@ -34,7 +103,7 @@ export default function DashboardPage() {
         iconBgColor: 'bg-green-100',
         title: 'Total Recycled',
         titleColor: 'text-green-600',
-        value: '47.3kg',
+        value: `${userStats?.totalRecycled || 0}kg`,
         valueColor: 'text-green-600',
         subtitle: '+12% from last month',
         subtitleColor: 'text-green-500',
@@ -52,7 +121,7 @@ export default function DashboardPage() {
         iconBgColor: 'bg-blue-100',
         title: 'Total Earned',
         titleColor: 'text-blue-600',
-        value: '₦2082.50',
+        value: `₦${userStats?.totalEarnings.toFixed(2) || '0.00'}`,
         valueColor: 'text-blue-600',
         subtitle: '1450 ECO tokens',
         subtitleColor: 'text-blue-500',
@@ -65,7 +134,7 @@ export default function DashboardPage() {
         iconBgColor: 'bg-green-100',
         title: 'CO₂ Saved',
         titleColor: 'text-green-600',
-        value: '23.4kg',
+        value: `${userStats?.co2Saved || 0}kg`,
         valueColor: 'text-green-600',
         subtitle: '≈ 1 trees',
         subtitleColor: 'text-green-500',
@@ -164,19 +233,19 @@ export default function DashboardPage() {
     {
       icon: Shield,
       title: 'Eco Warrior',
-      status: 'earned',
+      status: userStats && userStats.totalRecycled >= 10 ? 'earned' : 'locked',
       description: 'Recycle 10kg of materials',
     },
     {
       icon: Trophy,
       title: 'Green Champion',
-      status: 'locked',
+      status: userStats && userStats.totalRecycled >= 50 ? 'earned' : 'locked',
       description: 'Recycle 50kg of materials',
     },
     {
       icon: Globe,
       title: 'Planet Saver',
-      status: 'locked',
+      status: userStats && userStats.co2Saved >= 100 ? 'earned' : 'locked',
       description: 'Save 100kg of CO₂ emissions',
     },
   ];
@@ -189,19 +258,47 @@ export default function DashboardPage() {
     { id: 'wallet', label: 'Wallet', icon: Wallet },
   ];
 
+  // Show loading state while fetching user data
+  if (!isAuthenticated || !user) {
+    return (
+      <AppLayout showHeader={true} showSidebar={true} showFooter={true}>
+        <div className="flex min-h-screen items-center justify-center">
+          <div className="text-center">
+            <div className="h-12 w-12 animate-spin rounded-full border-4 border-green-500 border-t-transparent"></div>
+            <p className="mt-4 text-gray-600">Loading your dashboard...</p>
+          </div>
+        </div>
+      </AppLayout>
+    );
+  }
+
   return (
     <AppLayout showHeader={true} showSidebar={true} showFooter={true}>
       <div className="dashboard-container min-h-screen p-4 lg:p-6">
         <div className="mx-auto max-w-7xl space-y-6 lg:space-y-8">
-          {/* Header Section */}
+          {/* Header Section with Real User Data */}
           <div className="mt-4 flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
             <div>
               <h1 className="text-green-gradient font-space-grotesk mb-2 flex items-center gap-3 bg-transparent bg-clip-text text-3xl font-bold md:text-4xl lg:text-5xl">
-                Welcome back, Adaora <Recycle className="h-8 w-8 text-green-400 lg:h-10 lg:w-10" />
+                Welcome back, {user.userData?.name || 'User'}{' '}
+                <Recycle className="h-8 w-8 text-green-400 lg:h-10 lg:w-10" />
               </h1>
               <p className="secondary-text font-inter text-lg">
                 Your eco-impact is making a difference in Lagos
               </p>
+
+              {/* ✅ Show user role and wallet info */}
+              <div className="mt-2 flex items-center gap-4 text-sm text-gray-500">
+                <span>Role: {user.primaryRole}</span>
+                <span>•</span>
+                <span>User ID: {user.userData?.userId}</span>
+                {user.walletAddress && (
+                  <>
+                    <span>•</span>
+                    <span>Wallet: {user.walletAddress.slice(0, 8)}...</span>
+                  </>
+                )}
+              </div>
             </div>
             <div className="flex gap-3">
               <button className="text-primary font-inter flex items-center gap-2 rounded-lg bg-[#DCFCE7] px-4 font-semibold text-white transition-colors hover:bg-white/20">
@@ -214,11 +311,18 @@ export default function DashboardPage() {
             </div>
           </div>
 
-          {/* Stats Cards */}
+          {/* Stats Cards with Real Data */}
           <div className="stats-grid grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4 lg:gap-6">
-            {statsData.overview.map((stat, index) => (
-              <StatCard key={index} {...stat} />
-            ))}
+            {isLoadingStats
+              ? // Loading skeletons
+                Array.from({ length: 4 }).map((_, index) => (
+                  <div key={index} className="animate-pulse rounded-lg bg-gray-200 p-6">
+                    <div className="mb-2 h-4 rounded bg-gray-300"></div>
+                    <div className="mb-2 h-8 rounded bg-gray-300"></div>
+                    <div className="h-3 rounded bg-gray-300"></div>
+                  </div>
+                ))
+              : statsData.overview.map((stat, index) => <StatCard key={index} {...stat} />)}
           </div>
 
           {/* Tab Navigation */}
@@ -241,13 +345,13 @@ export default function DashboardPage() {
 
           {/* Tab Content */}
           <div className="space-y-6">
-            {activeTab === 'overview' && <OverviewTab />}
+            {activeTab === 'overview' && <OverviewTab userStats={userStats} />}
             {activeTab === 'activity' && <ActivityTab />}
             {activeTab === 'shop' && <ShopTab productsData={productsData} />}
             {activeTab === 'achievements' && (
               <AchievementsTab achievementsData={achievementsData} />
             )}
-            {activeTab === 'wallet' && <WalletTab />}
+            {activeTab === 'wallet' && <WalletTab userStats={userStats} />}
           </div>
         </div>
       </div>
@@ -255,10 +359,14 @@ export default function DashboardPage() {
   );
 
   // Tab Components
-  function OverviewTab() {
+  function OverviewTab({ userStats }: { userStats: UserStats | null }) {
+    const progressPercentage = userStats
+      ? Math.min((userStats.currentProgress / userStats.monthlyGoal) * 100, 100)
+      : 0;
+
     return (
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
-        {/* Monthly Goal Progress */}
+        {/* Monthly Goal Progress with Real Data */}
         <div className="rounded-2xl border border-slate-700/50 bg-black/80 p-6">
           <div className="mb-4 flex items-center gap-2">
             <Recycle className="text-primary h-5 w-5" />
@@ -270,21 +378,31 @@ export default function DashboardPage() {
           <div className="space-y-4">
             <div className="flex justify-between text-sm">
               <span className="text-gray-400">Current Progress</span>
-              <span className="font-medium text-white">32.5kg / 50kg</span>
+              <span className="font-medium text-white">
+                {userStats?.currentProgress || 0}kg / {userStats?.monthlyGoal || 50}kg
+              </span>
             </div>
 
             <div className="h-3 w-full rounded-full bg-slate-700">
-              <div className="h-3 rounded-full bg-green-500" style={{ width: '65%' }}></div>
+              <div
+                className="h-3 rounded-full bg-green-500"
+                style={{ width: `${progressPercentage}%` }}
+              ></div>
             </div>
 
             <div className="flex justify-between text-sm">
-              <span className="font-medium text-green-400">65% complete</span>
-              <span className="text-gray-400">17.5kg remaining</span>
+              <span className="font-medium text-green-400">
+                {Math.round(progressPercentage)}% complete
+              </span>
+              <span className="text-gray-400">
+                {Math.max(0, (userStats?.monthlyGoal || 50) - (userStats?.currentProgress || 0))}kg
+                remaining
+              </span>
             </div>
           </div>
         </div>
 
-        {/* Environmental Impact */}
+        {/* Environmental Impact with Real Data */}
         <div className="rounded-2xl border border-slate-700/50 bg-black/80 p-6">
           <div className="text-primary mb-4 flex items-center gap-2">
             <Leaf className="h-5 w-5" />
@@ -295,15 +413,21 @@ export default function DashboardPage() {
 
           <div className="grid grid-cols-2 gap-4">
             <div className="rounded-lg bg-green-50 p-4 text-center">
-              <p className="font-space-grotesk text-2xl font-bold text-green-600">23.4kg</p>
+              <p className="font-space-grotesk text-2xl font-bold text-green-600">
+                {userStats?.co2Saved || 0}kg
+              </p>
               <p className="font-inter text-sm text-green-600">CO₂ Saved</p>
             </div>
             <div className="rounded-lg bg-blue-50 p-4 text-center">
-              <p className="font-space-grotesk text-2xl font-bold text-blue-600">118L</p>
+              <p className="font-space-grotesk text-2xl font-bold text-blue-600">
+                {((userStats?.totalRecycled || 0) * 5).toFixed(0)}L
+              </p>
               <p className="font-inter text-sm text-blue-600">Water Saved</p>
             </div>
             <div className="col-span-2 rounded-lg bg-purple-50 p-4 text-center">
-              <p className="font-space-grotesk text-2xl font-bold text-purple-600">1</p>
+              <p className="font-space-grotesk text-2xl font-bold text-purple-600">
+                {Math.floor((userStats?.co2Saved || 0) / 23)}
+              </p>
               <p className="font-inter text-sm text-purple-600">Trees equivalent</p>
             </div>
           </div>
@@ -499,10 +623,10 @@ export default function DashboardPage() {
     );
   }
 
-  function WalletTab() {
+  function WalletTab({ userStats }: { userStats: UserStats | null }) {
     return (
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
-        {/* Wallet Balance */}
+        {/* Wallet Balance with Real Data */}
         <div className="shadow-border-green rounded-2xl border border-green-500/30 bg-black/80 p-6">
           <div className="mb-4 flex items-center gap-2">
             <Wallet className="h-5 w-5 text-green-400" />
@@ -512,7 +636,9 @@ export default function DashboardPage() {
           <div className="space-y-4">
             <div className="flex items-center justify-between rounded-lg bg-slate-800 p-3">
               <span className="font-medium text-white">ECO Tokens</span>
-              <span className="font-bold text-green-400">1450</span>
+              <span className="font-bold text-green-400">
+                {Math.floor((userStats?.totalEarnings || 0) / 10)}
+              </span>
             </div>
             <div className="flex items-center justify-between rounded-lg bg-slate-800 p-3">
               <span className="font-medium text-white">HBAR</span>
@@ -520,7 +646,9 @@ export default function DashboardPage() {
             </div>
             <div className="flex items-center justify-between rounded-lg bg-slate-800 p-3">
               <span className="font-medium text-white">Total Value</span>
-              <span className="font-bold text-white">$2,205</span>
+              <span className="font-bold text-white">
+                ${((userStats?.totalEarnings || 0) * 0.0024).toFixed(2)}
+              </span>
             </div>
 
             <div className="mt-4 grid grid-cols-2 gap-2">

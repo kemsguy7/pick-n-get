@@ -1,0 +1,183 @@
+[
+  {
+    "type": "constructor",
+    "stateMutability": "undefined",
+    "payable": false,
+    "inputs": [{ "type": "address", "name": "_pickngetContract" }]
+  },
+  { "type": "error", "name": "AlreadyRegistered", "inputs": [] },
+  { "type": "error", "name": "InsufficientStock", "inputs": [] },
+  { "type": "error", "name": "InvalidAddress", "inputs": [] },
+  { "type": "error", "name": "NotAuthorized", "inputs": [] },
+  { "type": "error", "name": "ProductSoldOut", "inputs": [] },
+  {
+    "type": "event",
+    "anonymous": false,
+    "name": "ProducerRegistered",
+    "inputs": [
+      { "type": "address", "name": "producer", "indexed": true },
+      { "type": "uint256", "name": "registrationId", "indexed": false }
+    ]
+  },
+  {
+    "type": "event",
+    "anonymous": false,
+    "name": "ProductAdded",
+    "inputs": [
+      { "type": "uint256", "name": "productId", "indexed": true },
+      { "type": "address", "name": "owner", "indexed": true }
+    ]
+  },
+  {
+    "type": "event",
+    "anonymous": false,
+    "name": "ProductPurchased",
+    "inputs": [
+      { "type": "uint256", "name": "productId", "indexed": true },
+      { "type": "address", "name": "buyer", "indexed": true },
+      { "type": "uint256", "name": "amountPaid", "indexed": false }
+    ]
+  },
+  { "type": "fallback", "stateMutability": "payable" },
+  {
+    "type": "function",
+    "name": "addProduct",
+    "constant": false,
+    "payable": false,
+    "inputs": [
+      { "type": "string", "name": "_name" },
+      { "type": "uint256", "name": "_quantity" },
+      { "type": "string", "name": "_description" },
+      { "type": "bytes", "name": "_data" },
+      { "type": "uint256", "name": "_amount" }
+    ],
+    "outputs": []
+  },
+  {
+    "type": "function",
+    "name": "getProductOwner",
+    "constant": true,
+    "stateMutability": "view",
+    "payable": false,
+    "inputs": [{ "type": "uint256", "name": "_productId" }],
+    "outputs": [{ "type": "address", "name": "" }]
+  },
+  {
+    "type": "function",
+    "name": "getProductsByOwner",
+    "constant": true,
+    "stateMutability": "view",
+    "payable": false,
+    "inputs": [{ "type": "address", "name": "_owner" }],
+    "outputs": [{ "type": "uint256[]", "name": "" }]
+  },
+  {
+    "type": "function",
+    "name": "globalProductId",
+    "constant": true,
+    "stateMutability": "view",
+    "payable": false,
+    "inputs": [],
+    "outputs": [{ "type": "uint256", "name": "" }]
+  },
+  {
+    "type": "function",
+    "name": "hasBuyerPaid",
+    "constant": true,
+    "stateMutability": "view",
+    "payable": false,
+    "inputs": [
+      { "type": "uint256", "name": "" },
+      { "type": "address", "name": "" }
+    ],
+    "outputs": [{ "type": "bool", "name": "" }]
+  },
+  {
+    "type": "function",
+    "name": "pickngetContract",
+    "constant": true,
+    "stateMutability": "view",
+    "payable": false,
+    "inputs": [],
+    "outputs": [{ "type": "address", "name": "" }]
+  },
+  {
+    "type": "function",
+    "name": "producers",
+    "constant": true,
+    "stateMutability": "view",
+    "payable": false,
+    "inputs": [{ "type": "address", "name": "" }],
+    "outputs": [
+      { "type": "string", "name": "name" },
+      { "type": "string", "name": "country" },
+      { "type": "uint256", "name": "phoneNumber" },
+      { "type": "bool", "name": "isRegistered" }
+    ]
+  },
+  {
+    "type": "function",
+    "name": "products",
+    "constant": true,
+    "stateMutability": "view",
+    "payable": false,
+    "inputs": [{ "type": "uint256", "name": "" }],
+    "outputs": [
+      { "type": "uint256", "name": "productId" },
+      { "type": "string", "name": "name" },
+      { "type": "uint256", "name": "quantity" },
+      { "type": "address", "name": "owner" },
+      { "type": "string", "name": "description" },
+      { "type": "bytes", "name": "data" },
+      { "type": "uint256", "name": "amount" },
+      { "type": "uint8", "name": "productStatus" }
+    ]
+  },
+  {
+    "type": "function",
+    "name": "productsByOwner",
+    "constant": true,
+    "stateMutability": "view",
+    "payable": false,
+    "inputs": [
+      { "type": "address", "name": "" },
+      { "type": "uint256", "name": "" }
+    ],
+    "outputs": [{ "type": "uint256", "name": "" }]
+  },
+  {
+    "type": "function",
+    "name": "registerProducer",
+    "constant": false,
+    "payable": false,
+    "inputs": [
+      { "type": "address", "name": "_producer" },
+      { "type": "string", "name": "_name" },
+      { "type": "string", "name": "_country" },
+      { "type": "uint256", "name": "_phoneNumber" }
+    ],
+    "outputs": []
+  },
+  {
+    "type": "function",
+    "name": "registrationCount",
+    "constant": true,
+    "stateMutability": "view",
+    "payable": false,
+    "inputs": [],
+    "outputs": [{ "type": "uint256", "name": "" }]
+  },
+  {
+    "type": "function",
+    "name": "shopProduct",
+    "constant": false,
+    "stateMutability": "payable",
+    "payable": true,
+    "inputs": [
+      { "type": "uint256", "name": "_productId" },
+      { "type": "uint256", "name": "_quantity" }
+    ],
+    "outputs": []
+  },
+  { "type": "receive", "stateMutability": "payable" }
+]

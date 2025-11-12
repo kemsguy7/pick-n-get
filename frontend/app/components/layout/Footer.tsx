@@ -39,7 +39,7 @@ const Footer = () => {
             <div className="mb-4 flex items-center gap-3">
               {/*  Logo Icon */}
 
-              <Image src="/EcoCleanLogo.png" width={150} height={150} alt="EcoCleans Logo" />
+              <Image src="/PickLogo.png" width={120} height={120} alt="Pick-n-Get Logo" />
             </div>
 
             <p className="mb-6 leading-relaxed text-gray-300">
@@ -151,7 +151,7 @@ const Footer = () => {
       {/* Bottom Section */}
       <div className="mx-3 mt-12 flex flex-col items-center gap-4 pt-8 md:justify-between lg:flex-row">
         <p className="text-sm text-gray-400">
-          © {getYear()} EcoCleans • All Rights Reserved • Built for sustainable, tokenized
+          © {getYear()} Pick-n-Get • All Rights Reserved • Built for sustainable, tokenized
           recycling
         </p>
 

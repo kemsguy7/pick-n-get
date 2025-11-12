@@ -88,7 +88,7 @@ export default function WhyChoose() {
         {/* Header */}
         <div className="mb-16">
           <h2 className="font-space-grotesk mb-6 text-4xl font-semibold text-balance text-white md:text-5xl lg:text-6xl">
-            Why Choose EcoCleans?
+            Why Choose Pick-n-Get?
           </h2>
           <p className="secondary-text max-w-2xl text-lg font-normal text-pretty text-gray-300 md:text-xl">
             We're revolutionizing waste management across Africa with cutting-edge Web3 technology"

@@ -5,6 +5,7 @@ import { Check, AlertCircle } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useAgentSignup } from '../../../../contexts/AgentSignupContext';
 import AppLayout from '../../../../components/layout/AppLayout';
+import Image from 'next/image';
 
 export default function AgentSignupStep3(): React.JSX.Element {
   const router = useRouter();
@@ -172,10 +173,10 @@ export default function AgentSignupStep3(): React.JSX.Element {
         <div className="w-full max-w-md">
           {/* Logo */}
           <div className="mb-8 text-center">
-            <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-2xl bg-green-500">
-              <div className="h-8 w-8 rounded-lg bg-white"></div>
+            <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-2xl">
+              <Image src="/PickLogo.png" width={200} height={200} alt="Pick-n-Get Logo" />
             </div>
-            <h1 className="font-space-grotesk text-2xl font-bold text-white">Join EcoCleans</h1>
+            <h1 className="font-space-grotesk text-2xl font-bold text-white">Join Pick-n-Get</h1>
             <p className="font-inter text-gray-300">Start your sustainable journey today</p>
           </div>
 

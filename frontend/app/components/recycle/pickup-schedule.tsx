@@ -6,6 +6,7 @@ import { Truck, MapPin, Loader2, AlertCircle } from 'lucide-react';
 import { calculateVehicleType } from '../../utils/vehicleCalculator';
 
 const baseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api/v1';
+
 interface PickupScheduleProps {
   formData: RecycleFormData;
   updateFormData: (data: Partial<RecycleFormData>) => void;
@@ -35,22 +36,24 @@ export default function PickupSchedule({
   const [address, setAddress] = useState(formData.address);
   const [date, setDate] = useState(formData.date);
   const [time, setTime] = useState(formData.time);
+  console.log(setDate, setTime);
 
   // Rider selection state
   const [availableRiders, setAvailableRiders] = useState<RiderOption[]>([]);
-  const [selectedRider, setSelectedRider] = useState<number | null>(null);
+  const [selectedRider, setSelectedRider] = useState<RiderOption | null>(
+    formData.selectedRiderId
+      ? availableRiders.find((r) => r.riderId === formData.selectedRiderId) || null
+      : null,
+  );
   const [isLoadingRiders, setIsLoadingRiders] = useState(false);
   const [ridersError, setRidersError] = useState('');
   const [vehicleType, setVehicleType] = useState('');
-
-  console.log(setTime, setDate);
 
   // Fetch riders when address is entered
   useEffect(() => {
     if (address && address.length > 10) {
       fetchNearestRiders();
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    } // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [address]);
 
   const fetchNearestRiders = async () => {
@@ -77,7 +80,7 @@ export default function PickupSchedule({
         body: JSON.stringify({
           pickupAddress: address,
           itemWeight: weight,
-          country: 'Nigeria', // TODO: Get from user profile or form
+          country: 'Nigeria',
         }),
       });
 
@@ -89,14 +92,14 @@ export default function PickupSchedule({
 
       if (data.data.riders.length === 0) {
         setRidersError('No available riders found in your area.');
-        setAvailableRiders([]); //Ensure empty
+        setAvailableRiders([]);
       } else {
         setAvailableRiders(data.data.riders);
-        setRidersError(''); //Clear error on success
+        setRidersError('');
       }
     } catch (error) {
       console.error('Error fetching riders:', error);
-      setAvailableRiders([]); // ✅ Clear riders on error
+      setAvailableRiders([]);
       const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred';
       setRidersError(errorMessage || 'Failed to load available riders');
     } finally {
@@ -104,39 +107,21 @@ export default function PickupSchedule({
     }
   };
 
-  // const handleRiderSelect = (riderId: number) => {
-  //   setSelectedRider(riderId);
-  //   const rider = availableRiders.find((r) => r.riderId === riderId);
-  //   if (rider) {
-  //     updateFormData({
-  //       selectedDriver: rider.name,
-  //       selectedVehicle: rider.vehicleType.toLowerCase() as 'bike' | 'car' | 'truck',
-  //     });
-  //   }
-  // };
-  const handleRiderSelect = (riderId: number) => {
-    setSelectedRider(riderId);
-    const rider = availableRiders.find((r) => r.riderId === riderId);
-    if (rider) {
-      const updateData = {
-        selectedDriver: rider.name,
-        selectedRiderId: riderId,
-        selectedVehicle: rider.vehicleType.toLowerCase() as 'bike' | 'car' | 'truck',
-      };
-      console.log('🔍 DEBUG: Calling updateFormData with:', updateData);
-      updateFormData(updateData);
-    }
+  const handleRiderSelect = (rider: RiderOption) => {
+    setSelectedRider(rider);
+
+    // ✅ Update formData immediately when rider is selected
+    const updateData = {
+      selectedDriver: rider.name,
+      selectedRiderId: rider.riderId,
+      selectedVehicle: rider.vehicleType.toLowerCase() as 'bike' | 'car' | 'truck',
+      pickupCoordinates: undefined, // Will be set during geocoding if needed
+    };
+
+    console.log('🔍 DEBUG: Selecting rider:', rider.riderId, rider.name);
+    updateFormData(updateData);
   };
 
-  // const handleContinue = () => {
-  //   if (!address || !selectedRider) {
-  //     alert('Please enter pickup address and select a rider');
-  //     return;
-  //   }
-
-  //   updateFormData({ address, date, time });
-  //   onSubmit();
-  // };
   const handleContinue = () => {
     if (!address) {
       alert('Please enter pickup address');
@@ -148,29 +133,25 @@ export default function PickupSchedule({
       return;
     }
 
-    const rider = availableRiders.find((r) => r.riderId === selectedRider);
+    console.log('🔍 DEBUG: Continue with rider:', selectedRider.riderId);
 
-    if (!rider) {
-      console.error('❌ Rider not found in availableRiders');
-      alert('Selected rider not found');
-      return;
-    }
-
-    console.log('🔍 DEBUG: handleContinue - rider ID:', rider.riderId);
-    console.log('🔍 DEBUG: Current formData:', formData);
-
-    // Update form data with ALL required fields
-    updateFormData({
+    // ✅ Final update with all data before submitting
+    const finalUpdateData = {
       address,
       date,
       time,
-      selectedDriver: rider.name,
-      selectedRiderId: rider.riderId, // ✅ Ensure ID is passed
-      selectedVehicle: rider.vehicleType.toLowerCase() as 'bike' | 'car' | 'truck',
-    });
+      selectedDriver: selectedRider.name,
+      selectedRiderId: selectedRider.riderId,
+      selectedVehicle: selectedRider.vehicleType.toLowerCase() as 'bike' | 'car' | 'truck',
+    };
 
-    console.log('🔍 DEBUG: After updateFormData, calling onSubmit...');
-    onSubmit();
+    updateFormData(finalUpdateData);
+
+    // Small delay to ensure state is updated before submit
+    setTimeout(() => {
+      console.log('🔍 DEBUG: Calling onSubmit with riderId:', selectedRider.riderId);
+      onSubmit();
+    }, 100);
   };
 
   const getVehicleIcon = (type: string) => {
@@ -183,7 +164,6 @@ export default function PickupSchedule({
         return '🚐';
       case 'truck':
         return '🚚';
-
       default:
         return '🚗';
     }
@@ -274,9 +254,9 @@ export default function PickupSchedule({
                   {availableRiders.map((rider, index) => (
                     <div
                       key={rider.riderId}
-                      onClick={() => handleRiderSelect(rider.riderId)}
+                      onClick={() => handleRiderSelect(rider)}
                       className={`cursor-pointer rounded-xl border-2 p-4 transition-all duration-200 ${
-                        selectedRider === rider.riderId
+                        selectedRider?.riderId === rider.riderId
                           ? 'border-green-500 bg-green-500/20'
                           : 'border-slate-600/50 bg-slate-800/50 hover:border-green-500/50 hover:bg-slate-800/70'
                       }`}
@@ -332,7 +312,7 @@ export default function PickupSchedule({
                       </div>
 
                       {/* Selected Indicator */}
-                      {selectedRider === rider.riderId && (
+                      {selectedRider?.riderId === rider.riderId && (
                         <div className="mt-3 flex items-center gap-2 rounded-lg bg-green-500/10 p-2">
                           <div className="flex h-5 w-5 items-center justify-center rounded-full bg-green-500">
                             <svg
@@ -392,9 +372,7 @@ export default function PickupSchedule({
                 {selectedRider && (
                   <div className="flex justify-between">
                     <span className="text-gray-300">Selected Rider:</span>
-                    <span className="font-medium text-green-400">
-                      {availableRiders.find((r) => r.riderId === selectedRider)?.name}
-                    </span>
+                    <span className="font-medium text-green-400">{selectedRider.name}</span>
                   </div>
                 )}
               </div>

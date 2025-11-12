@@ -1,26 +1,26 @@
-import React from 'react'
-import { Heart, ShoppingCart, Star } from 'lucide-react'
+import React from 'react';
+import { Heart, ShoppingCart, Star } from 'lucide-react';
 
 export interface ProductCardProps {
-  id: string
-  image: string
-  name: string
-  description: string
-  price: number
-  currency: string
-  originalPrice?: number
-  rating: number
-  reviewCount: number
-  brand: string
-  inStock: number
-  recycledPercentage: number
-  isVerified: boolean
-  ecoTokens?: number
-  freeShipping?: boolean
-  shippingThreshold?: number
-  onAddToCart?: (id: string) => void
-  onToggleFavorite?: (id: string) => void
-  isFavorited?: boolean
+  id: string;
+  image: string;
+  name: string;
+  description: string;
+  price: number;
+  currency: string;
+  originalPrice?: number;
+  rating: number;
+  reviewCount: number;
+  brand: string;
+  inStock: number;
+  recycledPercentage: number;
+  isVerified: boolean;
+  ecoTokens?: number;
+  freeShipping?: boolean;
+  shippingThreshold?: number;
+  onAddToCart?: (id: string) => void;
+  onToggleFavorite?: (id: string) => void;
+  isFavorited?: boolean;
 }
 
 export default function ProductCard({
@@ -42,28 +42,33 @@ export default function ProductCard({
   shippingThreshold,
   onAddToCart,
   onToggleFavorite,
-  isFavorited = false
+  isFavorited = false,
 }: ProductCardProps) {
   return (
-    <div className="bg-black/80 rounded-xl border border-slate-700/50 overflow-hidden hover:border-green-500/30 transition-all duration-200 group">
+    <div className="group overflow-hidden rounded-xl border border-slate-700/50 bg-black/80 transition-all duration-200 hover:border-green-500/30">
       {/* Image Section */}
       <div className="relative aspect-square overflow-hidden">
-        <img 
-          src={image} 
+        <img
+          src={image}
           alt={name}
-          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+          className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
+          onError={(e) => {
+            console.error('❌ Image failed to load:', image); // ✅ Debug log
+            const target = e.target as HTMLImageElement;
+            target.src =
+              'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="400" height="400"%3E%3Crect fill="%23334155" width="400" height="400"/%3E%3Ctext fill="%239CA3AF" font-family="sans-serif" font-size="20" x="50%" y="50%" text-anchor="middle" dy=".3em"%3ENo Image%3C/text%3E%3C/svg%3E';
+          }}
         />
-        
+
         {/* Badges */}
-        <div className="absolute top-3 left-3 flex font-inter font-medium flex-col gap-2">
-          <div className="bg-light-green text-primary border-[#000000]  border-[0.5px] text-white px-6 py-1 rounded-lg text-xs font-medium backdrop-blur-sm">
+        <div className="font-inter absolute top-3 left-3 flex flex-col gap-2 font-medium">
+          <div className="bg-light-green text-primary rounded-lg border-[0.5px] border-[#000000] px-6 py-1 text-xs font-medium text-white backdrop-blur-sm">
             {recycledPercentage}% Recycled
           </div>
           {isVerified && (
-            <div className="bg-blue-100 text-[#2563ED] border-[#000000]  border-[0.5px] rounded-lg px-2 py-1  text-xs  
-            backdrop-blur-sm flex items-center gap-1">
-              <div className="w-3 h-3 flex items-center justify-center">
-                <div className="w-1.5 h-1.5 "></div>
+            <div className="flex items-center gap-1 rounded-lg border-[0.5px] border-[#000000] bg-blue-100 px-2 py-1 text-xs text-[#2563ED] backdrop-blur-sm">
+              <div className="flex h-3 w-3 items-center justify-center">
+                <div className="h-1.5 w-1.5"></div>
               </div>
               Verified
             </div>
@@ -73,75 +78,81 @@ export default function ProductCard({
         {/* Favorite Button */}
         <button
           onClick={() => onToggleFavorite?.(id)}
-          className="absolute top-3 right-3 w-8 h-8 bg-white backdrop-blur-sm rounded-md flex items-center justify-center hover:bg-red-500/70 transition-all duration-200"
+          className="absolute top-3 right-3 flex h-8 w-8 items-center justify-center rounded-md bg-white backdrop-blur-sm transition-all duration-200 hover:bg-red-500/70"
         >
-          <Heart className={`w-4 h-4 ${isFavorited ? 'fill-red-500 text-red-500' : 'text-black'}`} />
+          <Heart
+            className={`h-4 w-4 ${isFavorited ? 'fill-red-500 text-red-500' : 'text-black'}`}
+          />
         </button>
       </div>
 
       {/* Content Section */}
-      <div className="p-4 space-y-3">
+      <div className="space-y-3 p-4">
         {/* Product Name */}
-        <h3 className="text-white font-medium  font-space-grotesk text-lg leading-tight">
-          {name}
-        </h3>
+        <h3 className="font-space-grotesk text-lg leading-tight font-medium text-white">{name}</h3>
 
         {/* Description */}
-        <p className="secondary-text text-sm font-inter line-clamp-2">
-          {description}
-        </p>
+        <p className="secondary-text font-inter line-clamp-2 text-sm">{description}</p>
 
         {/* Rating & Reviews */}
         <div className="flex items-center gap-2">
           <div className="flex items-center gap-1">
-            <Star className="w-4 h-4 fill-yellow-400 text-yellow-400" />
-            <span className="text-white space font-medium text-sm">{rating}</span>
+            <Star className="h-4 w-4 fill-yellow-400 text-yellow-400" />
+            <span className="space text-sm font-medium text-white">{rating}</span>
           </div>
-          <span className="text-gray-400 secondary-text font-normal font-inter text-sm">({reviewCount} reviews)</span>
+          <span className="secondary-text font-inter text-sm font-normal text-gray-400">
+            ({reviewCount} reviews)
+          </span>
         </div>
 
         {/* Brand */}
-        <p className="font-inter text-xs font-medium"> <span className="secondary-text"> by</span> {brand}</p>
+        <p className="font-inter text-xs font-medium">
+          {' '}
+          <span className="secondary-text"> by</span> {brand}
+        </p>
 
         {/* Price Section */}
         <div className="flex items-center gap-2">
-          <span className="text-white font-bold text-xl font-space-grotesk">
-            {currency}{price.toFixed(2)}
+          <span className="font-space-grotesk text-xl font-bold text-white">
+            {currency}
+            {price.toFixed(2)}
           </span>
           {originalPrice && (
-            <span className="text-gray-400 line-through text-sm">
-              {currency}{originalPrice.toFixed(2)}
+            <span className="text-sm text-gray-400 line-through">
+              {currency}
+              {originalPrice.toFixed(2)}
             </span>
           )}
         </div>
 
         {/* ECO Tokens */}
         {ecoTokens && (
-          <div className="flex items-center gap-1 text-green-400 text-sm">
-            <div className="w-4 h-4 bg-green-500 rounded-full"></div>
+          <div className="flex items-center gap-1 text-sm text-green-400">
+            <div className="h-4 w-4 rounded-full bg-green-500"></div>
             <span>{ecoTokens}ECO or pay with tokens</span>
           </div>
         )}
 
         {/* Stock Info */}
-        <p className="text-gray-400 text-sm">{inStock} in stock</p>
+        <p className="text-sm text-gray-400">{inStock} in stock</p>
 
         {/* Add to Cart Button */}
         <button
           onClick={() => onAddToCart?.(id)}
-          className="w-full gradient-button text-black font-semibold py-3 px-4 rounded-lg hover:shadow-lg transition-all duration-200 flex items-center justify-center gap-2"
+          className="gradient-button flex w-full items-center justify-center gap-2 rounded-lg px-4 py-3 font-semibold text-black transition-all duration-200 hover:shadow-lg"
         >
-          <ShoppingCart className="w-4 h-4" />
+          <ShoppingCart className="h-4 w-4" />
           Add to Cart
         </button>
 
         {/* Shipping Info */}
         {freeShipping && shippingThreshold && (
-          <p className="text-gray-400 text-xs text-center">
-            Free shipping on orders over {currency}{shippingThreshold.toLocaleString()}
+          <p className="text-center text-xs text-gray-400">
+            Free shipping on orders over {currency}
+            {shippingThreshold.toLocaleString()}
           </p>
         )}
       </div>
     </div>
-  )
+  );
 }
