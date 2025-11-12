@@ -1,8 +1,11 @@
+import { VendorData } from '../contexts/AuthContext';
+
 const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_API_URL || 'http://localhost:5000/api/v1';
 
 export interface CheckWalletResponse {
   status: string;
   data: {
+    vendorData: VendorData | undefined;
     walletAddress: string;
     roles: string[];
     primaryRole: string;

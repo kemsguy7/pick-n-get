@@ -2,7 +2,7 @@ import { ContractId } from '@hashgraph/sdk';
 import { WalletInterface } from './wallets/walletInterface';
 import { ContractFunctionParameterBuilder } from './wallets/contractFunctionParameterBuilder';
 
-const CONTRACT_ADDRESS = '0.0.7153245';
+const CONTRACT_ADDRESS = '0.0.7162853';
 
 // Type definitions
 export interface UserData {
@@ -51,7 +51,7 @@ const delay = (ms: number): Promise<void> => new Promise((res) => setTimeout(res
 function ipfsHashToBytes(ipfsHash: string): string {
   try {
     if (!ipfsHash || ipfsHash.trim().length === 0) {
-      throw new Error('Empty IPFS hash provided');
+      throw new Error('Empty  hash provided');
     }
     const encoder = new TextEncoder();
     const bytes = encoder.encode(ipfsHash);
@@ -63,8 +63,8 @@ function ipfsHashToBytes(ipfsHash: string): string {
     console.log(`  - Converted IPFS hash to hex (${bytes.length} bytes)`);
     return hexString;
   } catch (error) {
-    console.error('Error converting IPFS hash to bytes:', error);
-    throw new Error(`Failed to convert IPFS hash to bytes: ${error}`);
+    console.error('Error converting Image hash to bytes:', error);
+    throw new Error(`Failed to convert Image hash to bytes: ${error}`);
   }
 }
 

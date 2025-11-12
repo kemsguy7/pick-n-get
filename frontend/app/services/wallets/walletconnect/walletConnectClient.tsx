@@ -13,12 +13,17 @@ import {
   TransferTransaction,
   TransactionReceipt,
   TransactionReceiptQuery,
+  Hbar,
 } from '@hashgraph/sdk';
 import { ContractFunctionParameterBuilder } from '../contractFunctionParameterBuilder';
 import { appConfig } from '../../../config';
 import { SignClientTypes } from '@walletconnect/types';
 import { DAppConnector, HederaSessionEvent, HederaChainId } from '@hashgraph/hedera-wallet-connect';
 import EventEmitter from 'events';
+
+const base_url = process.env.PUBLIC_BACKEND_API_URL;
+console.log(Hbar);
+
 /* eslint-disable react-refresh/only-export-components */
 
 // Created refreshEvent because `dappConnector.walletConnectClient.on(eventName, syncWithWalletConnectContext)` would not call syncWithWalletConnectContext
@@ -30,16 +35,13 @@ const currentNetworkConfig = appConfig.networks.testnet;
 const hederaNetwork = currentNetworkConfig.network;
 // const hederaClient = Client.forName(hederaNetwork);
 
-// const metadata: SignClientTypes.Metadata = {
-//   name: "Pick'n'Get",
-//   description: "Recycling Platform",
-//   url: window.location.origin,
-//   icons: [window.location.origin + "/logo192.png"],
-// }
 const metadata: SignClientTypes.Metadata = {
-  name: 'EcoCleans',
+  name: 'Pick-n-Get',
   description: 'Recycling Platform',
-  url: typeof window !== 'undefined' ? window.location.origin : 'https://localhost:3000',
+  url:
+    typeof window !== 'undefined'
+      ? window.location.origin
+      : (base_url ?? 'https://pick-n-get-fe.vercel.app/'),
   icons: [typeof window !== 'undefined' ? window.location.origin + '/logo192.png' : '/logo192.png'],
 };
 
@@ -143,11 +145,23 @@ class WalletConnectWallet implements WalletInterface {
     functionName: string,
     functionParameters: ContractFunctionParameterBuilder,
     gasLimit: number,
+    payableAmount?: string | number,
   ) {
     const tx = new ContractExecuteTransaction()
       .setContractId(contractId)
       .setGas(gasLimit)
       .setFunction(functionName, functionParameters.buildHAPIParams());
+
+    // ✅ FIX: Use Hbar.from() with HbarUnit
+    if (payableAmount !== undefined && payableAmount !== null) {
+      const hbarAmount =
+        typeof payableAmount === 'string' ? parseFloat(payableAmount) : payableAmount;
+
+      // ✅ CORRECT: Specify HbarUnit.Hbar as the second parameter
+      const { HbarUnit } = await import('@hashgraph/sdk');
+      tx.setPayableAmount(Hbar.from(hbarAmount, HbarUnit.Hbar));
+      console.log(`💰 Sending payment: ${hbarAmount} HBAR`);
+    }
 
     const signer = this.getSigner();
     await tx.freezeWithSigner(signer);

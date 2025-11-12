@@ -6,6 +6,7 @@ import { useRouter } from 'next/navigation';
 import { useAgentSignup } from '../../../../contexts/AgentSignupContext';
 import { useWalletInterface } from '../../../../services/wallets/useWalletInterface';
 import { WalletInterface } from '../../../../services/wallets/walletInterface';
+import Image from 'next/image';
 
 import {
   registerRider,
@@ -13,8 +14,6 @@ import {
   RiderData,
   VehicleType,
 } from '../../../../services/riderService';
-// import { validateFile, uploadToIPFS, testPinataConnection } from '../../../../apis/ipfsApi';
-
 import AppLayout from '../../../../components/layout/AppLayout';
 import { uploadToHedera, validateFile } from '../../../../apis/hederaApi';
 interface DocumentUploadForm {
@@ -371,7 +370,7 @@ export default function AgentSignupStep4(): React.JSX.Element {
         throw new Error(validation.errors.join(', '));
       }
 
-      setLoadingMessage('Submitting registration to blockchain...');
+      setLoadingMessage('Submitting registration to Hedera DLT...');
 
       // Register rider on blockchain
       const walletData = createWalletData(accountId, walletInterface);
@@ -402,7 +401,7 @@ export default function AgentSignupStep4(): React.JSX.Element {
         let successMessage = `Registration successful! Your rider ID is: ${result.riderId}. Transaction: ${result.txHash}`;
 
         if (result.web2Error) {
-          successMessage += ` Note: Data was saved to blockchain but backend sync failed. Please contact support.`;
+          successMessage += ` Note: Data was saved to Hedera DLT  but backend sync failed. Please contact support.`;
         }
 
         setSuccess(successMessage);
@@ -537,10 +536,10 @@ export default function AgentSignupStep4(): React.JSX.Element {
         <div className="w-full max-w-md">
           {/* Logo */}
           <div className="mb-8 text-center">
-            <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-2xl bg-green-500">
-              <div className="h-8 w-8 rounded-lg bg-white"></div>
+            <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-2xl">
+              <Image src="/PickLogo.png" width={200} height={200} alt="Pick-n-Get Logo" />
             </div>
-            <h1 className="font-space-grotesk text-2xl font-bold text-white">Join EcoCleans</h1>
+            <h1 className="font-space-grotesk text-2xl font-bold text-white">Join Pick-n-Get</h1>
             <p className="font-inter text-gray-300">Start your sustainable journey today</p>
           </div>
 
@@ -581,7 +580,7 @@ export default function AgentSignupStep4(): React.JSX.Element {
                 </h3>
                 <p className="font-inter text-sm text-gray-600">
                   Provide valid documents to become a verified agent. Files will be securely stored
-                  on IPFS.
+                  on HFS.
                 </p>
               </div>
 

@@ -2,7 +2,7 @@ import { ContractId } from '@hashgraph/sdk';
 import { WalletInterface } from './wallets/walletInterface';
 import { ContractFunctionParameterBuilder } from './wallets/contractFunctionParameterBuilder';
 
-const CONTRACT_ADDRESS = '0.0.7153245';
+const CONTRACT_ADDRESS = '0.0.7162853';
 
 // Type definitions for admin operations
 export enum RiderStatus {
@@ -477,7 +477,7 @@ function decodeContractError(errorHex: string): string | null {
   }
 }
 
-// ✅ GET CONTRACT BALANCE
+// ✅ REPLACE IN adminService.ts - Use contractQuery instead of executeContractFunction
 export async function getContractBalance(walletData: WalletData): Promise<{
   success: boolean;
   balance?: string;
@@ -490,14 +490,15 @@ export async function getContractBalance(walletData: WalletData): Promise<{
       throw new Error('Wallet interface not available');
     }
 
+    // FIX: Use contractQuery for view functions (no transaction required)
     const functionParameters = new ContractFunctionParameterBuilder();
     const contractId = ContractId.fromString(CONTRACT_ADDRESS);
 
-    const result = await walletInterface.executeContractFunction(
+    //CHANGED: contractQuery instead of executeContractFunction
+    const result = await walletInterface?.contractQuery?.(
       contractId,
       'contractBalance',
       functionParameters,
-      100000, // Lower gas for view function
     );
 
     return {
@@ -513,13 +514,7 @@ export async function getContractBalance(walletData: WalletData): Promise<{
   }
 }
 
-/**
- * Fund the contract with HBAR
- * @param walletData - [accountId, walletInterface, network]
- * @param amount - Amount in HBAR (will be converted to tinybars)
- * @returns Promise<FundContractResult>
- */
-
+// ✅ ALSO FIX: Remove 5th argument from fundContract
 export async function fundContract(
   walletData: WalletData,
   // hbarAmount: number,
@@ -538,11 +533,12 @@ export async function fundContract(
     const functionParameters = new ContractFunctionParameterBuilder();
     const contractId = ContractId.fromString(CONTRACT_ADDRESS);
 
+    // ✅ FIXED: Only 4 arguments
     const result = await walletInterface.executeContractFunction(
       contractId,
       'fundContract',
       functionParameters,
-      200000, // Gas limit
+      200000, // Only gas limit
     );
 
     return {
@@ -557,6 +553,13 @@ export async function fundContract(
     };
   }
 }
+
+/**
+ * Fund the contract with HBAR
+ * @param walletData - [accountId, walletInterface, network]
+ * @param amount - Amount in HBAR (will be converted to tinybars)
+ * @returns Promise<FundContractResult>
+ */
 
 // ✅ UPDATE MATERIAL PRICE
 export async function updateMaterialPrice(
