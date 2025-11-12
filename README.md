@@ -60,7 +60,7 @@ Our team consists of **Hedera Certified Developers**:
 | -------------------- | ------------------------------------------------------------------------------------------- | ----------------------------------------------------------- | ---------------------------------------- |
 | **Matthew Idungafa** | [Hedera Developer](https://certs.hashgraphdev.com/7e9701d5-37ee-4ec0-979b-81f895586fe6.pdf) | [LinkedIn](https://www.linkedin.com/in/matthew-idungafa/)   | [@kemsguy7](https://github.com/kemsguy7) |
 | **Joy Aruku**        | [Hedera Developer](https://certs.hashgraphdev.com/353ac361-2257-4165-839e-18ed4d9f07fe.pdf) | [LinkedIn](https://www.linkedin.com/in/joy-aruku-a23361195) | [@Dev-JoyA](https://github.com/Dev-JoyA) |
-| **Nkiru Medaleine**  | Team Member                                                                                 | [LinkedIn](#)                                               | [GitHub/X](#)                            |
+| **Nkiru Medaleine**  | UX/UI Lead                                                                                  | [LinkedIn](#)                                               | [GitHub/X](#)                            |
 
 ---
 
